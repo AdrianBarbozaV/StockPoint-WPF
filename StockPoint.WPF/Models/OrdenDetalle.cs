@@ -47,10 +47,20 @@ namespace StockPoint.WPF.Models
         public int Cantidad
         {
             get => cantidad;
-            set { if (cantidad != value) { cantidad = value; OnPropertyChanged(); OnPropertyChanged(nameof(Subtotal)); } }
+            set
+            {
+                if (cantidad != value)
+                {
+                    cantidad = value;
+                    OnPropertyChanged();
+                    OnPropertyChanged(nameof(Subtotal));
+                    OnPropertyChanged(nameof(ImpuestoLinea));
+                }
+            }
         }
 
         public decimal Subtotal => PrecioUnitario * Cantidad;
+        public decimal ImpuestoLinea => TieneImpuesto ? Subtotal * 0.13m : 0m;
 
         protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)
             => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));

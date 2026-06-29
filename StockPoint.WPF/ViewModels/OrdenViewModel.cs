@@ -34,10 +34,16 @@ namespace StockPoint.WPF.ViewModels
         private ObservableCollection<OrdenDetalle> detalles = new();
 
         [ObservableProperty]
+        private decimal subtotalSinImpuesto;
+
+        [ObservableProperty]
         private decimal totalImpuesto;
 
         [ObservableProperty]
         private decimal totalVenta;
+
+        [ObservableProperty]
+        private string notas = string.Empty;
 
         public System.DateTime FechaOrden { get; } = System.DateTime.Now;
 
@@ -138,8 +144,9 @@ namespace StockPoint.WPF.ViewModels
         private void RecalcularTotales()
         {
             const decimal tasaIva = 0.13m;
+            SubtotalSinImpuesto = Detalles.Sum(d => d.Subtotal);
             TotalImpuesto = Detalles.Where(d => d.TieneImpuesto).Sum(d => d.Subtotal * tasaIva);
-            TotalVenta = Detalles.Sum(d => d.Subtotal) + TotalImpuesto;
+            TotalVenta = SubtotalSinImpuesto + TotalImpuesto;
         }
     }
 }
