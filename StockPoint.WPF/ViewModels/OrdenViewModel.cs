@@ -11,7 +11,7 @@ namespace StockPoint.WPF.ViewModels
 {
     public partial class OrdenViewModel : ObservableObject
     {
-        private readonly OrdenService ordenService;
+        private readonly MockOrdenService ordenService;
 
         [ObservableProperty]
         private ObservableCollection<Cliente> clientes = new();
@@ -43,7 +43,7 @@ namespace StockPoint.WPF.ViewModels
 
         public OrdenViewModel()
         {
-            ordenService = new OrdenService();
+            ordenService = new MockOrdenService();
             _ = CargarClientesAsync();
         }
 
