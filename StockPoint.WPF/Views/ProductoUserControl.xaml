@@ -9,11 +9,12 @@
     <UserControl.Resources>
         <BooleanToVisibilityConverter x:Key="BoolToVis"/>
 
-        <Style x:Key="HeaderButton" TargetType="Button">
+        <!-- Botón de acción principal (cabecera) -->
+        <Style x:Key="ActionButton" TargetType="Button">
             <Setter Property="Foreground" Value="White"/>
             <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="FontSize" Value="12"/>
             <Setter Property="FontWeight" Value="SemiBold"/>
-            <Setter Property="FontSize" Value="13"/>
             <Setter Property="Padding" Value="14,7"/>
             <Setter Property="Cursor" Value="Hand"/>
             <Setter Property="Template">
@@ -21,16 +22,16 @@
                     <ControlTemplate TargetType="Button">
                         <Border x:Name="Bg"
                                 Background="{TemplateBinding Background}"
-                                CornerRadius="5"
+                                CornerRadius="2"
                                 Padding="{TemplateBinding Padding}">
                             <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
-                                <Setter TargetName="Bg" Property="Opacity" Value="0.85"/>
+                                <Setter TargetName="Bg" Property="Opacity" Value="0.82"/>
                             </Trigger>
                             <Trigger Property="IsEnabled" Value="False">
-                                <Setter TargetName="Bg" Property="Opacity" Value="0.4"/>
+                                <Setter TargetName="Bg" Property="Opacity" Value="0.35"/>
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
@@ -38,24 +39,33 @@
             </Setter>
         </Style>
 
-        <Style x:Key="FormButton" TargetType="Button">
-            <Setter Property="Foreground" Value="White"/>
-            <Setter Property="BorderThickness" Value="0"/>
-            <Setter Property="FontWeight" Value="SemiBold"/>
-            <Setter Property="Padding" Value="16,8"/>
+        <!-- Botón del formulario -->
+        <Style x:Key="FormPrimary" TargetType="Button" BasedOn="{StaticResource ActionButton}">
+            <Setter Property="Background" Value="#2563EB"/>
+            <Setter Property="Padding" Value="18,8"/>
+        </Style>
+        <Style x:Key="FormSecondary" TargetType="Button">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Foreground" Value="#475569"/>
+            <Setter Property="BorderBrush" Value="#CBD5E1"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="Padding" Value="18,8"/>
             <Setter Property="Cursor" Value="Hand"/>
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
                         <Border x:Name="Bg"
                                 Background="{TemplateBinding Background}"
-                                CornerRadius="5"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="2"
                                 Padding="{TemplateBinding Padding}">
                             <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
-                                <Setter TargetName="Bg" Property="Opacity" Value="0.85"/>
+                                <Setter TargetName="Bg" Property="Background" Value="#F1F5F9"/>
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
@@ -63,28 +73,44 @@
             </Setter>
         </Style>
 
-        <Style TargetType="TextBox">
-            <Setter Property="Padding" Value="6,5"/>
-            <Setter Property="Margin" Value="0,2,0,8"/>
-            <Setter Property="BorderBrush" Value="#D5D8DC"/>
-        </Style>
-
-        <Style TargetType="CheckBox">
-            <Setter Property="Margin" Value="0,6,0,4"/>
+        <!-- TextBox del formulario -->
+        <Style x:Key="FormField" TargetType="TextBox">
+            <Setter Property="Padding" Value="8,6"/>
+            <Setter Property="Margin" Value="0,3,0,10"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="BorderBrush" Value="#CBD5E1"/>
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="TextBox">
+                        <Border x:Name="Border"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="1"
+                                CornerRadius="2">
+                            <ScrollViewer x:Name="PART_ContentHost" Margin="0"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsFocused" Value="True">
+                                <Setter TargetName="Border" Property="BorderBrush" Value="#2563EB"/>
+                                <Setter TargetName="Border" Property="BorderThickness" Value="1.5"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
         </Style>
     </UserControl.Resources>
 
-    <Grid Background="#F0F2F5">
+    <Grid Background="#F1F5F9">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <!-- ══════════════════════════════════════════════
-             Fila 0 — Header
-        ══════════════════════════════════════════════ -->
-        <Border Grid.Row="0" Background="#1A2533" Padding="18,12">
+        <!-- ══ Cabecera ══ -->
+        <Border Grid.Row="0" Background="#0F172A" Padding="20,13">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
@@ -93,177 +119,146 @@
 
                 <StackPanel VerticalAlignment="Center">
                     <TextBlock Text="Gestión de Productos"
-                               Foreground="White" FontSize="20" FontWeight="Bold"/>
-                    <TextBlock Text="Vista 1 — StockPoint POS"
-                               Foreground="#6C7A89" FontSize="11"/>
+                               Foreground="#F8FAFC" FontSize="17" FontWeight="SemiBold"/>
+                    <TextBlock Text="Catálogo · Inventario · Precios"
+                               Foreground="#475569" FontSize="11" Margin="0,1,0,0"/>
                 </StackPanel>
 
                 <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
-                    <Button Content="＋  Nuevo"
-                            Style="{StaticResource HeaderButton}"
+                    <Button Content="Nuevo"
+                            Style="{StaticResource ActionButton}"
                             Command="{Binding NewCommand}"
-                            Background="#27AE60" Margin="0,0,8,0"/>
-                    <Button Content="✎  Editar"
-                            Style="{StaticResource HeaderButton}"
+                            Background="#2563EB" Margin="0,0,6,0"/>
+                    <Button Content="Editar"
+                            Style="{StaticResource ActionButton}"
                             Command="{Binding EditCommand}"
-                            Background="#2980B9" Margin="0,0,8,0"/>
-                    <Button Content="✕  Eliminar"
-                            Style="{StaticResource HeaderButton}"
+                            Background="#334155" Margin="0,0,6,0"/>
+                    <Button Content="Eliminar"
+                            Style="{StaticResource ActionButton}"
                             Command="{Binding DeleteCommand}"
-                            Background="#C0392B"/>
+                            Background="#991B1B"/>
                 </StackPanel>
             </Grid>
         </Border>
 
-        <!-- ══════════════════════════════════════════════
-             Fila 1 — Tarjetas de resumen
-        ══════════════════════════════════════════════ -->
+        <!-- ══ Tarjetas de resumen ══ -->
         <UniformGrid Grid.Row="1" Columns="3" Margin="16,14,16,0">
 
-            <!-- Total productos -->
-            <Border CornerRadius="8" Margin="0,0,8,0" Padding="18,14">
-                <Border.Background>
-                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
-                        <GradientStop Color="#2980B9" Offset="0"/>
-                        <GradientStop Color="#1A6FA0" Offset="1"/>
-                    </LinearGradientBrush>
-                </Border.Background>
+            <Border Background="White" BorderBrush="#E2E8F0" BorderThickness="1"
+                    CornerRadius="3" Margin="0,0,7,0">
                 <Grid>
                     <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="4"/>
                         <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
-                    <StackPanel>
-                        <TextBlock Text="TOTAL PRODUCTOS" Foreground="#AED6F1"
+                    <Border Grid.Column="0" Background="#3B82F6" CornerRadius="3,0,0,3"/>
+                    <StackPanel Grid.Column="1" Margin="14,12">
+                        <TextBlock Text="TOTAL PRODUCTOS" Foreground="#94A3B8"
                                    FontSize="10" FontWeight="Bold"/>
                         <TextBlock Text="{Binding TotalProductos}"
-                                   Foreground="White" FontSize="32" FontWeight="Bold"/>
+                                   Foreground="#0F172A" FontSize="30" FontWeight="Bold" Margin="0,2,0,0"/>
+                        <TextBlock Text="en catálogo" Foreground="#94A3B8" FontSize="11"/>
                     </StackPanel>
-                    <TextBlock Grid.Column="1" Text="📦" FontSize="36"
-                               VerticalAlignment="Center" Opacity="0.4"/>
                 </Grid>
             </Border>
 
-            <!-- Valor inventario -->
-            <Border CornerRadius="8" Margin="4,0" Padding="18,14">
-                <Border.Background>
-                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
-                        <GradientStop Color="#27AE60" Offset="0"/>
-                        <GradientStop Color="#1E8449" Offset="1"/>
-                    </LinearGradientBrush>
-                </Border.Background>
+            <Border Background="White" BorderBrush="#E2E8F0" BorderThickness="1"
+                    CornerRadius="3" Margin="3.5,0">
                 <Grid>
                     <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="4"/>
                         <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
-                    <StackPanel>
-                        <TextBlock Text="VALOR INVENTARIO" Foreground="#A9DFBF"
+                    <Border Grid.Column="0" Background="#0D9488" CornerRadius="3,0,0,3"/>
+                    <StackPanel Grid.Column="1" Margin="14,12">
+                        <TextBlock Text="VALOR INVENTARIO" Foreground="#94A3B8"
                                    FontSize="10" FontWeight="Bold"/>
-                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                            <TextBlock Text="₡ " Foreground="White" FontSize="18"
-                                       FontWeight="Bold" VerticalAlignment="Bottom" Margin="0,0,2,4"/>
+                        <StackPanel Orientation="Horizontal" Margin="0,2,0,0">
+                            <TextBlock Text="₡" Foreground="#0F172A" FontSize="16"
+                                       FontWeight="Bold" VerticalAlignment="Bottom" Margin="0,0,3,5"/>
                             <TextBlock Text="{Binding ValorInventario, StringFormat=\{0:N0\}}"
-                                       Foreground="White" FontSize="32" FontWeight="Bold"/>
+                                       Foreground="#0F172A" FontSize="30" FontWeight="Bold"/>
                         </StackPanel>
+                        <TextBlock Text="valor total en stock" Foreground="#94A3B8" FontSize="11"/>
                     </StackPanel>
-                    <TextBlock Grid.Column="1" Text="💰" FontSize="36"
-                               VerticalAlignment="Center" Opacity="0.4"/>
                 </Grid>
             </Border>
 
-            <!-- Alertas de stock (cambia de color si hay alertas) -->
-            <Border CornerRadius="8" Margin="8,0,0,0" Padding="18,14">
-                <Border.Style>
-                    <Style TargetType="Border">
-                        <Setter Property="Background">
-                            <Setter.Value>
-                                <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
-                                    <GradientStop Color="#27AE60" Offset="0"/>
-                                    <GradientStop Color="#1E8449" Offset="1"/>
-                                </LinearGradientBrush>
-                            </Setter.Value>
-                        </Setter>
-                        <Style.Triggers>
-                            <DataTrigger Binding="{Binding HayAlertaStock}" Value="True">
-                                <Setter Property="Background">
-                                    <Setter.Value>
-                                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
-                                            <GradientStop Color="#E67E22" Offset="0"/>
-                                            <GradientStop Color="#CA6F1E" Offset="1"/>
-                                        </LinearGradientBrush>
-                                    </Setter.Value>
-                                </Setter>
-                            </DataTrigger>
-                        </Style.Triggers>
-                    </Style>
-                </Border.Style>
+            <Border Background="White" BorderBrush="#E2E8F0" BorderThickness="1"
+                    CornerRadius="3" Margin="7,0,0,0">
                 <Grid>
                     <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="4"/>
                         <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
-                    <StackPanel>
-                        <TextBlock Text="STOCK BAJO / CRÍTICO" FontSize="10" FontWeight="Bold">
+                    <Border Grid.Column="0" CornerRadius="3,0,0,3">
+                        <Border.Style>
+                            <Style TargetType="Border">
+                                <Setter Property="Background" Value="#64748B"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding HayAlertaStock}" Value="True">
+                                        <Setter Property="Background" Value="#DC2626"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Border.Style>
+                    </Border>
+                    <StackPanel Grid.Column="1" Margin="14,12">
+                        <TextBlock Text="ALERTAS DE STOCK" Foreground="#94A3B8"
+                                   FontSize="10" FontWeight="Bold"/>
+                        <TextBlock Text="{Binding ProductosBajoStock}" FontSize="30" FontWeight="Bold" Margin="0,2,0,0">
                             <TextBlock.Style>
                                 <Style TargetType="TextBlock">
-                                    <Setter Property="Foreground" Value="#A9DFBF"/>
+                                    <Setter Property="Foreground" Value="#64748B"/>
                                     <Style.Triggers>
                                         <DataTrigger Binding="{Binding HayAlertaStock}" Value="True">
-                                            <Setter Property="Foreground" Value="#FAD7A0"/>
+                                            <Setter Property="Foreground" Value="#DC2626"/>
                                         </DataTrigger>
                                     </Style.Triggers>
                                 </Style>
                             </TextBlock.Style>
                         </TextBlock>
-                        <TextBlock Text="{Binding ProductosBajoStock}"
-                                   Foreground="White" FontSize="32" FontWeight="Bold"/>
+                        <TextBlock Text="productos en riesgo" Foreground="#94A3B8" FontSize="11"/>
                     </StackPanel>
-                    <TextBlock Grid.Column="1" Text="⚠" FontSize="36"
-                               VerticalAlignment="Center" Opacity="0.4"/>
                 </Grid>
             </Border>
 
         </UniformGrid>
 
-        <!-- ══════════════════════════════════════════════
-             Fila 2 — DataGrid + Formulario lateral
-        ══════════════════════════════════════════════ -->
+        <!-- ══ Área de trabajo: DataGrid + Formulario ══ -->
         <Grid Grid.Row="2" Margin="16,14,16,16" ClipToBounds="True">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
 
-            <!-- Columna izquierda: buscador + DataGrid -->
+            <!-- Columna izquierda: búsqueda + grilla -->
             <Grid Grid.Column="0">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
 
-                <!-- Barra de búsqueda en vivo -->
+                <!-- Barra de búsqueda -->
                 <Border Grid.Row="0" Background="White"
-                        BorderBrush="#D5D8DC" BorderThickness="1"
-                        CornerRadius="6" Margin="0,0,12,10"
-                        Padding="2">
+                        BorderBrush="#CBD5E1" BorderThickness="1"
+                        CornerRadius="2" Margin="0,0,12,8">
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto"/>
                             <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
-                        <TextBlock Text="🔍" FontSize="14" VerticalAlignment="Center"
-                                   Margin="10,0,6,0" Foreground="#7F8C8D"/>
+                        <TextBlock Text="🔍" FontSize="13" VerticalAlignment="Center"
+                                   Margin="10,0,6,0" Foreground="#94A3B8"/>
                         <TextBox Grid.Column="1"
                                  Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"
-                                 BorderThickness="0" Padding="4,8"
-                                 Background="Transparent" Margin="0"
-                                 FontSize="13"/>
-                        <!-- Placeholder -->
+                                 BorderThickness="0" Padding="2,8"
+                                 Background="Transparent" FontSize="13"
+                                 Foreground="#0F172A" Margin="0"/>
                         <TextBlock Grid.Column="1"
                                    Text="Buscar por nombre o código..."
-                                   Foreground="#BDC3C7" FontSize="13"
-                                   VerticalAlignment="Center" Margin="4,0,0,0"
+                                   Foreground="#CBD5E1" FontSize="13"
+                                   VerticalAlignment="Center" Margin="2,0,0,0"
                                    IsHitTestVisible="False">
                             <TextBlock.Style>
                                 <Style TargetType="TextBlock">
@@ -287,31 +282,42 @@
                           IsReadOnly="True"
                           SelectionMode="Single"
                           GridLinesVisibility="Horizontal"
+                          HorizontalGridLinesBrush="#F1F5F9"
                           AlternationCount="2"
                           CanUserResizeRows="False"
-                          RowHeight="34"
+                          RowHeight="36"
                           FontSize="13"
+                          Foreground="#1E293B"
                           Margin="0,0,12,0"
-                          BorderBrush="#D5D8DC"
-                          Background="White">
+                          BorderBrush="#E2E8F0"
+                          Background="White"
+                          RowBackground="White"
+                          AlternatingRowBackground="#F8FAFC">
 
-                    <!-- Colores de fila según estado de stock -->
+                    <DataGrid.ColumnHeaderStyle>
+                        <Style TargetType="DataGridColumnHeader">
+                            <Setter Property="Background" Value="#F8FAFC"/>
+                            <Setter Property="Foreground" Value="#64748B"/>
+                            <Setter Property="FontSize" Value="11"/>
+                            <Setter Property="FontWeight" Value="Bold"/>
+                            <Setter Property="Padding" Value="10,9"/>
+                            <Setter Property="BorderBrush" Value="#E2E8F0"/>
+                            <Setter Property="BorderThickness" Value="0,0,0,1"/>
+                        </Style>
+                    </DataGrid.ColumnHeaderStyle>
+
                     <DataGrid.RowStyle>
                         <Style TargetType="DataGridRow">
-                            <Setter Property="Background" Value="White"/>
                             <Style.Triggers>
-                                <Trigger Property="AlternationIndex" Value="1">
-                                    <Setter Property="Background" Value="#F8F9FA"/>
-                                </Trigger>
                                 <DataTrigger Binding="{Binding EstadoStock}" Value="alerta">
-                                    <Setter Property="Background" Value="#FEF9E7"/>
+                                    <Setter Property="Background" Value="#FFFBEB"/>
                                 </DataTrigger>
                                 <DataTrigger Binding="{Binding EstadoStock}" Value="critico">
-                                    <Setter Property="Background" Value="#FDEDEC"/>
+                                    <Setter Property="Background" Value="#FEF2F2"/>
                                 </DataTrigger>
                                 <Trigger Property="IsSelected" Value="True">
-                                    <Setter Property="Background" Value="#D6EAF8"/>
-                                    <Setter Property="Foreground" Value="#1A2533"/>
+                                    <Setter Property="Background" Value="#EFF6FF"/>
+                                    <Setter Property="Foreground" Value="#1E3A5F"/>
                                 </Trigger>
                             </Style.Triggers>
                         </Style>
@@ -319,40 +325,40 @@
 
                     <DataGrid.Columns>
 
-                        <!-- Semáforo de stock -->
-                        <DataGridTemplateColumn Header="Estado" Width="70" CanUserSort="False">
+                        <!-- Semáforo -->
+                        <DataGridTemplateColumn Header="Estado" Width="90" CanUserSort="False">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <StackPanel Orientation="Horizontal"
                                                 HorizontalAlignment="Center" VerticalAlignment="Center">
-                                        <Ellipse Width="11" Height="11" Margin="0,0,5,0">
+                                        <Ellipse Width="8" Height="8" Margin="0,0,6,0">
                                             <Ellipse.Style>
                                                 <Style TargetType="Ellipse">
-                                                    <Setter Property="Fill" Value="#27AE60"/>
+                                                    <Setter Property="Fill" Value="#22C55E"/>
                                                     <Style.Triggers>
                                                         <DataTrigger Binding="{Binding EstadoStock}" Value="alerta">
-                                                            <Setter Property="Fill" Value="#F39C12"/>
+                                                            <Setter Property="Fill" Value="#F59E0B"/>
                                                         </DataTrigger>
                                                         <DataTrigger Binding="{Binding EstadoStock}" Value="critico">
-                                                            <Setter Property="Fill" Value="#E74C3C"/>
+                                                            <Setter Property="Fill" Value="#EF4444"/>
                                                         </DataTrigger>
                                                     </Style.Triggers>
                                                 </Style>
                                             </Ellipse.Style>
                                         </Ellipse>
-                                        <TextBlock VerticalAlignment="Center" FontSize="11">
+                                        <TextBlock VerticalAlignment="Center" FontSize="12">
                                             <TextBlock.Style>
                                                 <Style TargetType="TextBlock">
-                                                    <Setter Property="Text" Value="OK"/>
-                                                    <Setter Property="Foreground" Value="#27AE60"/>
+                                                    <Setter Property="Text" Value="Normal"/>
+                                                    <Setter Property="Foreground" Value="#64748B"/>
                                                     <Style.Triggers>
                                                         <DataTrigger Binding="{Binding EstadoStock}" Value="alerta">
                                                             <Setter Property="Text" Value="Bajo"/>
-                                                            <Setter Property="Foreground" Value="#F39C12"/>
+                                                            <Setter Property="Foreground" Value="#B45309"/>
                                                         </DataTrigger>
                                                         <DataTrigger Binding="{Binding EstadoStock}" Value="critico">
-                                                            <Setter Property="Text" Value="Sin stock"/>
-                                                            <Setter Property="Foreground" Value="#E74C3C"/>
+                                                            <Setter Property="Text" Value="Crítico"/>
+                                                            <Setter Property="Foreground" Value="#DC2626"/>
                                                         </DataTrigger>
                                                     </Style.Triggers>
                                                 </Style>
@@ -365,18 +371,18 @@
 
                         <DataGridTextColumn Header="Código"  Binding="{Binding CodigoBarra}"    Width="110"/>
                         <DataGridTextColumn Header="Nombre"  Binding="{Binding NombreEtiqueta}" Width="*"/>
-                        <DataGridTextColumn Header="Precio"  Binding="{Binding PrecioNeto, StringFormat=₡\{0:N2\}}" Width="105"/>
-                        <DataGridTextColumn Header="Stock"   Binding="{Binding ExistenciaEnStock}"  Width="65"/>
-                        <DataGridCheckBoxColumn Header="IVA"   Binding="{Binding TieneImpuesto}"  Width="50"/>
-                        <DataGridCheckBoxColumn Header="Vende" Binding="{Binding PuedeVenderse}"  Width="65"/>
+                        <DataGridTextColumn Header="Precio (₡)" Binding="{Binding PrecioNeto, StringFormat=\{0:N2\}}" Width="110"/>
+                        <DataGridTextColumn Header="Stock"   Binding="{Binding ExistenciaEnStock}" Width="70"/>
+                        <DataGridCheckBoxColumn Header="IVA"   Binding="{Binding TieneImpuesto}"  Width="55"/>
+                        <DataGridCheckBoxColumn Header="Vende" Binding="{Binding PuedeVenderse}"   Width="65"/>
                     </DataGrid.Columns>
                 </DataGrid>
             </Grid>
 
-            <!-- ══ Formulario lateral con animación de slide ══ -->
-            <Border Grid.Column="1" Width="305"
-                    BorderBrush="#D5D8DC" BorderThickness="1"
-                    Background="White">
+            <!-- ══ Panel formulario — slide desde la derecha ══ -->
+            <Border Grid.Column="1" Width="310"
+                    Background="White"
+                    BorderBrush="#E2E8F0" BorderThickness="1">
 
                 <Border.RenderTransform>
                     <TranslateTransform/>
@@ -391,18 +397,16 @@
                                 <DataTrigger.EnterActions>
                                     <BeginStoryboard>
                                         <Storyboard>
-                                            <!-- Slide desde la derecha -->
                                             <DoubleAnimation
                                                 Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.X)"
-                                                From="310" To="0" Duration="0:0:0.28">
+                                                From="315" To="0" Duration="0:0:0.25">
                                                 <DoubleAnimation.EasingFunction>
                                                     <CubicEase EasingMode="EaseOut"/>
                                                 </DoubleAnimation.EasingFunction>
                                             </DoubleAnimation>
-                                            <!-- Fade-in suave -->
                                             <DoubleAnimation
                                                 Storyboard.TargetProperty="Opacity"
-                                                From="0" To="1" Duration="0:0:0.22"/>
+                                                From="0" To="1" Duration="0:0:0.2"/>
                                         </Storyboard>
                                     </BeginStoryboard>
                                 </DataTrigger.EnterActions>
@@ -418,74 +422,107 @@
                         <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
 
-                    <!-- Encabezado del formulario -->
-                    <Border Grid.Row="0" Background="#1A2533" Padding="14,12">
+                    <!-- Título del panel -->
+                    <Border Grid.Row="0" Background="#F8FAFC"
+                            BorderBrush="#E2E8F0" BorderThickness="0,0,0,1"
+                            Padding="16,13">
                         <TextBlock Text="{Binding FormTitle}"
-                                   Foreground="White" FontSize="14" FontWeight="Bold"/>
+                                   FontSize="14" FontWeight="SemiBold"
+                                   Foreground="#0F172A"/>
                     </Border>
 
                     <!-- Campos -->
                     <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
-                        <StackPanel Margin="14,10">
+                        <StackPanel Margin="16,12,16,4">
 
-                            <TextBlock Text="Código de barra" Foreground="#7F8C8D" FontSize="11" FontWeight="SemiBold" Margin="0,6,0,1"/>
-                            <TextBox Text="{Binding Form.CodigoBarra, UpdateSourceTrigger=PropertyChanged}"/>
+                            <TextBlock Text="CÓDIGO DE BARRA" Foreground="#94A3B8"
+                                       FontSize="10" FontWeight="Bold" Margin="0,0,0,3"/>
+                            <TextBox Text="{Binding Form.CodigoBarra, UpdateSourceTrigger=PropertyChanged}"
+                                     Style="{StaticResource FormField}"/>
 
-                            <TextBlock Foreground="#7F8C8D" FontSize="11" FontWeight="SemiBold" Margin="0,4,0,1">
-                                <Run Text="Nombre"/>
-                                <Run Text=" *" Foreground="#E74C3C"/>
+                            <TextBlock Foreground="#94A3B8" FontSize="10" FontWeight="Bold" Margin="0,4,0,3">
+                                <Run Text="NOMBRE"/>
+                                <Run Text=" *" Foreground="#DC2626"/>
                             </TextBlock>
-                            <TextBox Text="{Binding Form.NombreEtiqueta, UpdateSourceTrigger=PropertyChanged}"/>
+                            <TextBox Text="{Binding Form.NombreEtiqueta, UpdateSourceTrigger=PropertyChanged}"
+                                     Style="{StaticResource FormField}"/>
 
-                            <TextBlock Text="Descripción" Foreground="#7F8C8D" FontSize="11" FontWeight="SemiBold" Margin="0,4,0,1"/>
+                            <TextBlock Text="DESCRIPCIÓN" Foreground="#94A3B8"
+                                       FontSize="10" FontWeight="Bold" Margin="0,4,0,3"/>
                             <TextBox Text="{Binding Form.Descripcion, UpdateSourceTrigger=PropertyChanged}"
-                                     AcceptsReturn="True" Height="60"
+                                     Style="{StaticResource FormField}"
+                                     AcceptsReturn="True" Height="62"
                                      TextWrapping="Wrap" VerticalScrollBarVisibility="Auto"/>
 
-                            <TextBlock Text="Precio neto (₡)" Foreground="#7F8C8D" FontSize="11" FontWeight="SemiBold" Margin="0,4,0,1"/>
-                            <TextBox Text="{Binding Form.PrecioNeto, UpdateSourceTrigger=PropertyChanged}"/>
+                            <!-- Separador de sección -->
+                            <TextBlock Text="PRECIOS" Foreground="#94A3B8"
+                                       FontSize="10" FontWeight="Bold" Margin="0,8,0,3"/>
+                            <Separator Background="#F1F5F9" Margin="0,0,0,8"/>
 
-                            <TextBlock Text="Precio mínimo (₡)" Foreground="#7F8C8D" FontSize="11" FontWeight="SemiBold" Margin="0,4,0,1"/>
-                            <TextBox Text="{Binding Form.PrecioMinimo, UpdateSourceTrigger=PropertyChanged}"/>
+                            <TextBlock Text="PRECIO NETO (₡)" Foreground="#94A3B8"
+                                       FontSize="10" FontWeight="Bold" Margin="0,0,0,3"/>
+                            <TextBox Text="{Binding Form.PrecioNeto, UpdateSourceTrigger=PropertyChanged}"
+                                     Style="{StaticResource FormField}"/>
+
+                            <TextBlock Text="PRECIO MÍNIMO (₡)" Foreground="#94A3B8"
+                                       FontSize="10" FontWeight="Bold" Margin="0,4,0,3"/>
+                            <TextBox Text="{Binding Form.PrecioMinimo, UpdateSourceTrigger=PropertyChanged}"
+                                     Style="{StaticResource FormField}"/>
 
                             <CheckBox Content="Tiene impuesto (IVA)"
                                       IsChecked="{Binding Form.TieneImpuesto}"
-                                      FontWeight="SemiBold"/>
+                                      Foreground="#334155" FontSize="13" Margin="0,4,0,8"/>
 
                             <StackPanel Visibility="{Binding Form.TieneImpuesto, Converter={StaticResource BoolToVis}}">
-                                <TextBlock Text="IVA (%)" Foreground="#7F8C8D" FontSize="11" FontWeight="SemiBold" Margin="0,4,0,1"/>
-                                <TextBox Text="{Binding Form.ImpuestoValorAgregado, UpdateSourceTrigger=PropertyChanged}"/>
+                                <TextBlock Text="IVA (%)" Foreground="#94A3B8"
+                                           FontSize="10" FontWeight="Bold" Margin="0,0,0,3"/>
+                                <TextBox Text="{Binding Form.ImpuestoValorAgregado, UpdateSourceTrigger=PropertyChanged}"
+                                         Style="{StaticResource FormField}"/>
                             </StackPanel>
 
-                            <Separator Margin="0,6,0,6" Background="#EAECEE"/>
+                            <!-- Separador de sección -->
+                            <TextBlock Text="INVENTARIO" Foreground="#94A3B8"
+                                       FontSize="10" FontWeight="Bold" Margin="0,8,0,3"/>
+                            <Separator Background="#F1F5F9" Margin="0,0,0,8"/>
 
-                            <TextBlock Text="Stock actual" Foreground="#7F8C8D" FontSize="11" FontWeight="SemiBold" Margin="0,0,0,1"/>
-                            <TextBox Text="{Binding Form.ExistenciaEnStock, UpdateSourceTrigger=PropertyChanged}"/>
+                            <TextBlock Text="STOCK ACTUAL" Foreground="#94A3B8"
+                                       FontSize="10" FontWeight="Bold" Margin="0,0,0,3"/>
+                            <TextBox Text="{Binding Form.ExistenciaEnStock, UpdateSourceTrigger=PropertyChanged}"
+                                     Style="{StaticResource FormField}"/>
 
-                            <TextBlock Text="Límite de alerta" Foreground="#7F8C8D" FontSize="11" FontWeight="SemiBold" Margin="0,4,0,1"/>
-                            <TextBox Text="{Binding Form.ExistenciaLimiteParaAlerta, UpdateSourceTrigger=PropertyChanged}"/>
+                            <TextBlock Text="LÍMITE DE ALERTA" Foreground="#94A3B8"
+                                       FontSize="10" FontWeight="Bold" Margin="0,4,0,3"/>
+                            <TextBox Text="{Binding Form.ExistenciaLimiteParaAlerta, UpdateSourceTrigger=PropertyChanged}"
+                                     Style="{StaticResource FormField}"/>
 
-                            <Separator Margin="0,6,0,6" Background="#EAECEE"/>
+                            <!-- Separador de sección -->
+                            <TextBlock Text="DISPONIBILIDAD" Foreground="#94A3B8"
+                                       FontSize="10" FontWeight="Bold" Margin="0,8,0,3"/>
+                            <Separator Background="#F1F5F9" Margin="0,0,0,8"/>
 
-                            <CheckBox Content="Puede venderse"  IsChecked="{Binding Form.PuedeVenderse}"  FontWeight="SemiBold"/>
-                            <CheckBox Content="Puede comprarse" IsChecked="{Binding Form.PuedeComprarse}" FontWeight="SemiBold"/>
+                            <CheckBox Content="Puede venderse"
+                                      IsChecked="{Binding Form.PuedeVenderse}"
+                                      Foreground="#334155" FontSize="13" Margin="0,0,0,6"/>
+                            <CheckBox Content="Puede comprarse"
+                                      IsChecked="{Binding Form.PuedeComprarse}"
+                                      Foreground="#334155" FontSize="13" Margin="0,0,0,4"/>
 
                         </StackPanel>
                     </ScrollViewer>
 
-                    <!-- Botones de acción -->
-                    <Border Grid.Row="2" Background="#F8F9FA"
-                            BorderBrush="#EAECEE" BorderThickness="0,1,0,0"
-                            Padding="14,10">
+                    <!-- Botones del formulario -->
+                    <Border Grid.Row="2"
+                            Background="#F8FAFC"
+                            BorderBrush="#E2E8F0" BorderThickness="0,1,0,0"
+                            Padding="16,12">
                         <StackPanel Orientation="Horizontal">
                             <Button Content="Guardar"
-                                    Style="{StaticResource FormButton}"
+                                    Style="{StaticResource FormPrimary}"
                                     Command="{Binding SaveCommand}"
-                                    Background="#27AE60" Margin="0,0,8,0"/>
+                                    Margin="0,0,8,0"/>
                             <Button Content="Cancelar"
-                                    Style="{StaticResource FormButton}"
-                                    Command="{Binding CancelCommand}"
-                                    Background="#95A5A6"/>
+                                    Style="{StaticResource FormSecondary}"
+                                    Command="{Binding CancelCommand}"/>
                         </StackPanel>
                     </Border>
 
