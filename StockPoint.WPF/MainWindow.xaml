@@ -5,100 +5,103 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:views="clr-namespace:StockPoint.WPF.Views"
         mc:Ignorable="d"
-        Title="StockPoint" Height="740" Width="1020"
+        Title="StockPoint POS"
+        Height="760" Width="1100"
+        MinHeight="600" MinWidth="900"
         WindowStartupLocation="CenterScreen"
-        Background="#0f172a">
+        Background="#F1F5F9">
 
     <Window.Resources>
-
-        <!-- TabItem oscuro con ControlTemplate mínimo -->
         <Style TargetType="TabItem">
-            <Setter Property="Foreground" Value="#64748b"/>
             <Setter Property="Background" Value="Transparent"/>
-            <Setter Property="Padding" Value="18,10"/>
+            <Setter Property="Foreground" Value="#8B949E"/>
+            <Setter Property="Padding" Value="16,0"/>
             <Setter Property="FontSize" Value="13"/>
-            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="FontWeight" Value="Normal"/>
+            <Setter Property="Cursor" Value="Hand"/>
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="TabItem">
-                        <Border x:Name="TabBorder"
+                        <Border x:Name="Tab"
                                 Background="Transparent"
                                 BorderThickness="0,0,0,2"
                                 BorderBrush="Transparent"
+                                Height="44"
                                 Padding="{TemplateBinding Padding}">
                             <ContentPresenter ContentSource="Header"
-                                              TextBlock.Foreground="{TemplateBinding Foreground}"/>
+                                              TextBlock.Foreground="{TemplateBinding Foreground}"
+                                              TextBlock.FontSize="{TemplateBinding FontSize}"
+                                              TextBlock.FontWeight="{TemplateBinding FontWeight}"
+                                              VerticalAlignment="Center"/>
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsSelected" Value="True">
-                                <Setter TargetName="TabBorder" Property="BorderBrush" Value="#0ea5e9"/>
-                                <Setter Property="Foreground" Value="#f1f5f9"/>
+                                <Setter TargetName="Tab" Property="BorderBrush" Value="White"/>
+                                <Setter Property="Foreground" Value="#E6EDF3"/>
+                                <Setter Property="FontWeight" Value="SemiBold"/>
                             </Trigger>
                             <Trigger Property="IsMouseOver" Value="True">
-                                <Setter Property="Foreground" Value="#cbd5e1"/>
+                                <Setter Property="Foreground" Value="#C9D1D9"/>
+                                <Setter TargetName="Tab" Property="Background" Value="#30363D"/>
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
                 </Setter.Value>
             </Setter>
         </Style>
-
     </Window.Resources>
 
-    <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
-        </Grid.RowDefinitions>
+    <TabControl Background="#F1F5F9" BorderThickness="0">
+        <TabControl.Template>
+            <ControlTemplate TargetType="TabControl">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
 
-        <!-- Header de la app -->
-        <Border Grid.Row="0" Background="#111827" Padding="24,12">
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="*"/>
-                </Grid.ColumnDefinitions>
-                <TextBlock Text="StockPoint"
-                           FontSize="18" FontWeight="Bold"
-                           Foreground="#f1f5f9" VerticalAlignment="Center"/>
-            </Grid>
-        </Border>
+                    <!-- Navbar oscuro con identidad + tabs integrados -->
+                    <Border Grid.Row="0" Background="#24292F">
+                        <Grid Margin="18,0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
 
-        <!-- Tabs -->
-        <TabControl Grid.Row="1"
-                    Background="#0f172a"
-                    BorderThickness="0"
-                    Padding="0">
-            <TabControl.Template>
-                <ControlTemplate TargetType="TabControl">
-                    <Grid>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="*"/>
-                        </Grid.RowDefinitions>
-                        <!-- Franja de tabs -->
-                        <Border Grid.Row="0"
-                                Background="#111827"
-                                BorderBrush="#1e293b"
-                                BorderThickness="0,0,0,1"
-                                Padding="12,0">
-                            <TabPanel IsItemsHost="True"/>
-                        </Border>
-                        <!-- Contenido del tab seleccionado -->
-                        <ContentPresenter Grid.Row="1"
-                                          ContentSource="SelectedContent"/>
-                    </Grid>
-                </ControlTemplate>
-            </TabControl.Template>
+                            <!-- Identidad -->
+                            <StackPanel Grid.Column="0" Orientation="Horizontal"
+                                        VerticalAlignment="Center" Margin="0,0,28,0">
+                                <TextBlock Text="◈" Foreground="#6E7681" FontSize="15"
+                                           VerticalAlignment="Center" Margin="0,0,9,0"/>
+                                <TextBlock Text="StockPoint" Foreground="#E6EDF3"
+                                           FontSize="13" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                                <TextBlock Text="  ·  POS" Foreground="#6E7681"
+                                           FontSize="13" VerticalAlignment="Center"/>
+                            </StackPanel>
 
-            <TabItem Header="Orden de Trabajo">
-                <views:OrdenUserControl/>
-            </TabItem>
+                            <!-- Tabs integrados en el navbar -->
+                            <TabPanel Grid.Column="1" IsItemsHost="True"
+                                      VerticalAlignment="Bottom" HorizontalAlignment="Left"/>
 
-            <TabItem Header="Gestión de Producto">
-                <views:ProductoUserControl/>
-            </TabItem>
+                            <!-- Equipo -->
+                            <TextBlock Grid.Column="2" Text="LPAC 2026 · Equipo 3"
+                                       Foreground="#484F58" FontSize="11" VerticalAlignment="Center"/>
+                        </Grid>
+                    </Border>
 
-        </TabControl>
-    </Grid>
+                    <ContentPresenter Grid.Row="1" ContentSource="SelectedContent"/>
+                </Grid>
+            </ControlTemplate>
+        </TabControl.Template>
+
+        <TabItem Header="Orden de Trabajo">
+            <views:OrdenUserControl/>
+        </TabItem>
+
+        <TabItem Header="Gestión de Producto">
+            <views:ProductoUserControl/>
+        </TabItem>
+
+    </TabControl>
 </Window>

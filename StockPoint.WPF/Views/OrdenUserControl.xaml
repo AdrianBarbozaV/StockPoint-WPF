@@ -4,8 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              mc:Ignorable="d"
-             d:DesignHeight="700" d:DesignWidth="1000"
-             Background="#0f172a">
+             d:DesignHeight="700" d:DesignWidth="1100">
 
     <UserControl.DataContext>
         <vm:OrdenViewModel xmlns:vm="clr-namespace:StockPoint.WPF.ViewModels"/>
@@ -13,272 +12,321 @@
 
     <UserControl.Resources>
 
-        <!-- Botón base con esquinas redondeadas -->
-        <Style x:Key="BtnBase" TargetType="Button">
+        <Style x:Key="ActionButton" TargetType="Button">
             <Setter Property="Foreground" Value="White"/>
             <Setter Property="BorderThickness" Value="0"/>
-            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="FontSize" Value="12"/>
             <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Padding" Value="14,6"/>
+            <Setter Property="Cursor" Value="Hand"/>
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
-                        <Border Background="{TemplateBinding Background}"
-                                CornerRadius="6"
-                                Padding="{TemplateBinding Padding}">
+                        <Border x:Name="Bg" Background="{TemplateBinding Background}"
+                                CornerRadius="6" Padding="{TemplateBinding Padding}">
                             <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
                         </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Bg" Property="Opacity" Value="0.82"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter TargetName="Bg" Property="Opacity" Value="0.35"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
                     </ControlTemplate>
                 </Setter.Value>
             </Setter>
         </Style>
 
-        <Style x:Key="BtnPrimary" TargetType="Button" BasedOn="{StaticResource BtnBase}">
-            <Setter Property="Background" Value="#0ea5e9"/>
-            <Setter Property="Padding" Value="14,8"/>
+        <Style x:Key="OutlineButton" TargetType="Button">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Foreground" Value="#374151"/>
+            <Setter Property="BorderBrush" Value="#D1D5DB"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Padding" Value="14,6"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="Bg" Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="6" Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Bg" Property="Background" Value="#F3F4F6"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter TargetName="Bg" Property="Opacity" Value="0.4"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
         </Style>
 
-        <Style x:Key="BtnSuccess" TargetType="Button" BasedOn="{StaticResource BtnBase}">
-            <Setter Property="Background" Value="#10b981"/>
-            <Setter Property="Padding" Value="14,12"/>
+        <Style x:Key="LightInput" TargetType="TextBox">
+            <Setter Property="Padding" Value="9,7"/>
             <Setter Property="FontSize" Value="13"/>
+            <Setter Property="Foreground" Value="#111827"/>
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="BorderBrush" Value="#D1D5DB"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="TextBox">
+                        <Border x:Name="Border" Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="1" CornerRadius="4">
+                            <ScrollViewer x:Name="PART_ContentHost" Margin="0"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsFocused" Value="True">
+                                <Setter TargetName="Border" Property="BorderBrush" Value="#2563EB"/>
+                                <Setter TargetName="Border" Property="BorderThickness" Value="1.5"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
         </Style>
 
-        <Style x:Key="BtnMuted" TargetType="Button" BasedOn="{StaticResource BtnBase}">
-            <Setter Property="Background" Value="#334155"/>
-            <Setter Property="Padding" Value="14,10"/>
+        <Style x:Key="FieldLabel" TargetType="TextBlock">
+            <Setter Property="Foreground" Value="#6B7280"/>
+            <Setter Property="FontSize" Value="10"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Margin" Value="0,14,0,5"/>
         </Style>
 
-        <Style x:Key="BtnIcon" TargetType="Button" BasedOn="{StaticResource BtnBase}">
+        <Style x:Key="LightCell" TargetType="DataGridCell">
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="BorderBrush" Value="Transparent"/>
+            <Setter Property="Foreground" Value="#374151"/>
+            <Setter Property="Padding" Value="10,6"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Style.Triggers>
+                <Trigger Property="IsSelected" Value="True">
+                    <Setter Property="Background" Value="#EFF6FF"/>
+                    <Setter Property="Foreground" Value="#1D4ED8"/>
+                    <Setter Property="BorderBrush" Value="Transparent"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style x:Key="LightRow" TargetType="DataGridRow">
+            <Setter Property="Foreground" Value="#374151"/>
+            <Style.Triggers>
+                <Trigger Property="IsSelected" Value="True">
+                    <Setter Property="Background" Value="#EFF6FF"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style x:Key="BtnIcon" TargetType="Button" BasedOn="{StaticResource ActionButton}">
             <Setter Property="Padding" Value="0"/>
             <Setter Property="Width" Value="26"/>
             <Setter Property="Height" Value="26"/>
             <Setter Property="FontSize" Value="12"/>
         </Style>
 
-        <!-- TextBox oscuro -->
-        <Style x:Key="DarkInput" TargetType="TextBox">
-            <Setter Property="Background" Value="#1e293b"/>
-            <Setter Property="Foreground" Value="#f1f5f9"/>
-            <Setter Property="BorderBrush" Value="#334155"/>
-            <Setter Property="BorderThickness" Value="1"/>
-            <Setter Property="Padding" Value="10,8"/>
-            <Setter Property="FontSize" Value="13"/>
-            <Setter Property="CaretBrush" Value="#f1f5f9"/>
-            <Setter Property="SelectionBrush" Value="#0ea5e9"/>
-        </Style>
-
-        <!-- ComboBox oscuro -->
-        <Style x:Key="DarkCombo" TargetType="ComboBox">
-            <Setter Property="Background" Value="#1e293b"/>
-            <Setter Property="Foreground" Value="#f1f5f9"/>
-            <Setter Property="BorderBrush" Value="#334155"/>
-            <Setter Property="BorderThickness" Value="1"/>
-            <Setter Property="Padding" Value="10,8"/>
-            <Setter Property="FontSize" Value="13"/>
-        </Style>
-
-        <!-- Etiqueta de campo -->
-        <Style x:Key="FieldLabel" TargetType="TextBlock">
-            <Setter Property="Foreground" Value="#64748b"/>
-            <Setter Property="FontSize" Value="11"/>
-            <Setter Property="FontWeight" Value="SemiBold"/>
-            <Setter Property="Margin" Value="0,14,0,5"/>
-        </Style>
-
-        <!-- Separador oscuro -->
-        <Style x:Key="DarkSeparator" TargetType="Separator">
-            <Setter Property="Background" Value="#1e293b"/>
-            <Setter Property="Margin" Value="0,8,0,8"/>
-        </Style>
-
-        <!-- Celda DataGrid -->
-        <Style x:Key="DarkCell" TargetType="DataGridCell">
-            <Setter Property="BorderThickness" Value="0"/>
-            <Setter Property="BorderBrush" Value="Transparent"/>
-            <Setter Property="Foreground" Value="#e2e8f0"/>
-            <Setter Property="Padding" Value="10,6"/>
-            <Setter Property="Background" Value="Transparent"/>
-            <Style.Triggers>
-                <Trigger Property="IsSelected" Value="True">
-                    <Setter Property="Background" Value="#1d4ed8"/>
-                    <Setter Property="Foreground" Value="White"/>
-                    <Setter Property="BorderBrush" Value="Transparent"/>
-                </Trigger>
-            </Style.Triggers>
-        </Style>
-
-        <!-- Fila DataGrid -->
-        <Style x:Key="DarkRow" TargetType="DataGridRow">
-            <Setter Property="Foreground" Value="#e2e8f0"/>
-            <Style.Triggers>
-                <Trigger Property="IsSelected" Value="True">
-                    <Setter Property="Background" Value="#1e40af"/>
-                </Trigger>
-            </Style.Triggers>
-        </Style>
-
     </UserControl.Resources>
 
-    <Grid>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="260"/>
-        </Grid.ColumnDefinitions>
+    <Grid Background="#F1F5F9">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
 
-        <!-- ═══ IZQUIERDA: formulario ═══ -->
-        <ScrollViewer Grid.Column="0" VerticalScrollBarVisibility="Auto" Background="#0f172a">
-            <StackPanel Margin="28,24,20,32">
-
-                <TextBlock Text="Nueva Orden de Venta"
-                           FontSize="22" FontWeight="Bold" Foreground="#f1f5f9" Margin="0,0,0,4"/>
-                <TextBlock Text="Completá los campos y agregá los productos"
-                           Foreground="#475569" FontSize="12"/>
-
-                <!-- Cliente -->
-                <TextBlock Text="CLIENTE" Style="{StaticResource FieldLabel}"/>
-                <ComboBox Style="{StaticResource DarkCombo}"
-                          ItemsSource="{Binding Clientes}"
-                          SelectedItem="{Binding ClienteSeleccionado, Mode=TwoWay}"
-                          DisplayMemberPath="Nombre"/>
-
-                <!-- Fecha -->
-                <TextBlock Text="FECHA DE ORDEN" Style="{StaticResource FieldLabel}"/>
-                <Border Background="#1e293b" BorderBrush="#334155" BorderThickness="1"
-                        CornerRadius="4" Padding="10,9">
-                    <TextBlock Text="{Binding FechaOrden, StringFormat=dd/MM/yyyy}"
-                               Foreground="#94a3b8" FontSize="13"/>
-                </Border>
-
-                <!-- Buscar producto -->
-                <TextBlock Text="BUSCAR PRODUCTO" Style="{StaticResource FieldLabel}"/>
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="Auto"/>
-                        <ColumnDefinition Width="200"/>
-                        <ColumnDefinition Width="Auto"/>
-                    </Grid.ColumnDefinitions>
-                    <TextBox Grid.Column="0" Style="{StaticResource DarkInput}" Margin="0,0,8,0"
-                             Text="{Binding BusquedaProducto, UpdateSourceTrigger=PropertyChanged}"/>
-                    <Button Grid.Column="1" Content="Buscar" Style="{StaticResource BtnPrimary}"
-                            Margin="0,0,8,0" Command="{Binding BuscarProductoCommand}"/>
-                    <ComboBox Grid.Column="2" Style="{StaticResource DarkCombo}" Margin="0,0,8,0"
-                              ItemsSource="{Binding ResultadosBusqueda}"
-                              SelectedItem="{Binding ProductoSeleccionado, Mode=TwoWay}"
-                              DisplayMemberPath="Nombre"/>
-                    <Button Grid.Column="3" Content="Agregar" Style="{StaticResource BtnPrimary}"
-                            Command="{Binding AgregarProductoCommand}"/>
-                </Grid>
-
-                <!-- Detalle -->
-                <TextBlock Text="DETALLE DE LA ORDEN" Style="{StaticResource FieldLabel}" Margin="0,20,0,8"/>
-                <Border BorderBrush="#1e293b" BorderThickness="1" CornerRadius="6">
-                    <DataGrid ItemsSource="{Binding Detalles}"
-                              Background="#1a2332"
-                              RowBackground="#1a2332"
-                              AlternatingRowBackground="#1e293b"
-                              Foreground="#e2e8f0"
-                              BorderThickness="0"
-                              GridLinesVisibility="Horizontal"
-                              HorizontalGridLinesBrush="#253447"
-                              AutoGenerateColumns="False"
-                              CanUserAddRows="False"
-                              CanUserResizeRows="False"
-                              SelectionMode="Single"
-                              HeadersVisibility="Column"
-                              CellStyle="{StaticResource DarkCell}"
-                              RowStyle="{StaticResource DarkRow}">
-
-                        <DataGrid.ColumnHeaderStyle>
-                            <Style TargetType="DataGridColumnHeader">
-                                <Setter Property="Background" Value="#1e293b"/>
-                                <Setter Property="Foreground" Value="#64748b"/>
-                                <Setter Property="Padding" Value="10,8"/>
-                                <Setter Property="FontSize" Value="11"/>
-                                <Setter Property="FontWeight" Value="SemiBold"/>
-                                <Setter Property="BorderBrush" Value="#253447"/>
-                                <Setter Property="BorderThickness" Value="0,0,0,1"/>
-                            </Style>
-                        </DataGrid.ColumnHeaderStyle>
-
-                        <DataGrid.Columns>
-                            <DataGridTextColumn Header="Código"       Binding="{Binding Codigo}"                              Width="85"  IsReadOnly="True"/>
-                            <DataGridTextColumn Header="Nombre"       Binding="{Binding NombreProducto}"                      Width="*"   IsReadOnly="True"/>
-                            <DataGridTextColumn Header="Precio Unit."  Binding="{Binding PrecioUnitario, StringFormat='₡{0:N0}'}" Width="110" IsReadOnly="True"/>
-                            <DataGridTextColumn Header="Cantidad"     Binding="{Binding Cantidad}"                            Width="70"  IsReadOnly="True"/>
-                            <DataGridTextColumn Header="Subtotal"     Binding="{Binding Subtotal, StringFormat='₡{0:N0}'}"    Width="105" IsReadOnly="True"/>
-                            <DataGridTextColumn Header="IVA"          Binding="{Binding ImpuestoLinea, StringFormat='₡{0:N0}'}" Width="90" IsReadOnly="True"/>
-                            <DataGridTemplateColumn Header="" Width="100">
-                                <DataGridTemplateColumn.CellTemplate>
-                                    <DataTemplate>
-                                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
-                                            <Button Content="+" Style="{StaticResource BtnIcon}" Background="#0ea5e9" Margin="2,0"
-                                                    Command="{Binding DataContext.IncrementarCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
-                                                    CommandParameter="{Binding}"/>
-                                            <Button Content="−" Style="{StaticResource BtnIcon}" Background="#334155" Margin="2,0"
-                                                    Command="{Binding DataContext.DecrementarCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
-                                                    CommandParameter="{Binding}"/>
-                                            <Button Content="✕" Style="{StaticResource BtnIcon}" Background="#dc2626" Margin="2,0"
-                                                    Command="{Binding DataContext.RemoverCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
-                                                    CommandParameter="{Binding}"/>
-                                        </StackPanel>
-                                    </DataTemplate>
-                                </DataGridTemplateColumn.CellTemplate>
-                            </DataGridTemplateColumn>
-                        </DataGrid.Columns>
-                    </DataGrid>
-                </Border>
-
-                <!-- Notas -->
-                <TextBlock Text="NOTAS" Style="{StaticResource FieldLabel}"/>
-                <TextBox Style="{StaticResource DarkInput}"
-                         Height="80" AcceptsReturn="True" TextWrapping="Wrap"
-                         VerticalScrollBarVisibility="Auto"
-                         Text="{Binding Notas, UpdateSourceTrigger=PropertyChanged}"/>
-
-            </StackPanel>
-        </ScrollViewer>
-
-        <!-- ═══ DERECHA: resumen ═══ -->
-        <Border Grid.Column="1" Background="#111827" BorderBrush="#1e293b" BorderThickness="1,0,0,0">
-            <StackPanel Margin="20,24,20,24">
-
-                <TextBlock Text="Resumen de Orden"
-                           FontSize="15" FontWeight="Bold" Foreground="#f1f5f9" Margin="0,0,0,16"/>
-                <Separator Style="{StaticResource DarkSeparator}"/>
-
-                <Grid Margin="0,6,0,6">
-                    <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
-                    <TextBlock Text="Subtotal" Foreground="#64748b" FontSize="13"/>
-                    <TextBlock Grid.Column="1" Foreground="#94a3b8" FontSize="13"
-                               Text="{Binding SubtotalSinImpuesto, StringFormat='₡{0:N0}'}"/>
-                </Grid>
-
-                <Grid Margin="0,6,0,6">
-                    <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
-                    <TextBlock Text="IVA (13%)" Foreground="#64748b" FontSize="13"/>
-                    <TextBlock Grid.Column="1" Foreground="#94a3b8" FontSize="13"
-                               Text="{Binding TotalImpuesto, StringFormat='₡{0:N0}'}"/>
-                </Grid>
-
-                <Separator Style="{StaticResource DarkSeparator}"/>
-
-                <Grid Margin="0,4,0,28">
-                    <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
-                    <TextBlock Text="Total" Foreground="#f1f5f9" FontSize="16" FontWeight="Bold"/>
-                    <TextBlock Grid.Column="1" Foreground="#10b981" FontSize="16" FontWeight="Bold"
-                               Text="{Binding TotalVenta, StringFormat='₡{0:N0}'}"/>
-                </Grid>
-
-                <Button Content="Procesar Orden" Style="{StaticResource BtnSuccess}"
-                        HorizontalAlignment="Stretch" Margin="0,0,0,8"
-                        Command="{Binding ProcesarOrdenCommand}"/>
-
-                <Button Content="Cancelar" Style="{StaticResource BtnMuted}"
-                        HorizontalAlignment="Stretch"/>
-
+        <!-- ══ Cabecera de sección ══ -->
+        <Border Grid.Row="0" Background="White"
+                BorderBrush="#E5E7EB" BorderThickness="0,0,0,1"
+                Padding="18,11">
+            <StackPanel VerticalAlignment="Center">
+                <TextBlock Text="Orden de Trabajo"
+                           Foreground="#111827" FontSize="15" FontWeight="SemiBold"/>
+                <TextBlock Text="Nueva venta · Clientes · Productos"
+                           Foreground="#9CA3AF" FontSize="11" Margin="0,1,0,0"/>
             </StackPanel>
         </Border>
 
+        <!-- ══ Contenido ══ -->
+        <Grid Grid.Row="1" Margin="16,14,16,16">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="260"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- ═══ IZQUIERDA: formulario ═══ -->
+            <Border Grid.Column="0" Background="White" BorderBrush="#E5E7EB" BorderThickness="1"
+                    CornerRadius="4" Margin="0,0,12,0">
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <StackPanel Margin="22,18,22,24">
+
+                        <!-- Cliente -->
+                        <TextBlock Text="CLIENTE" Style="{StaticResource FieldLabel}" Margin="0,0,0,5"/>
+                        <ComboBox Background="White" Foreground="#111827"
+                                  BorderBrush="#D1D5DB" BorderThickness="1"
+                                  Padding="8,6" FontSize="13"
+                                  ItemsSource="{Binding Clientes}"
+                                  SelectedItem="{Binding ClienteSeleccionado, Mode=TwoWay}"
+                                  DisplayMemberPath="Nombre"/>
+
+                        <!-- Fecha -->
+                        <TextBlock Text="FECHA DE ORDEN" Style="{StaticResource FieldLabel}"/>
+                        <Border Background="White" BorderBrush="#D1D5DB" BorderThickness="1"
+                                CornerRadius="4" Padding="9,8">
+                            <TextBlock Text="{Binding FechaOrden, StringFormat=dd/MM/yyyy}"
+                                       Foreground="#6B7280" FontSize="13"/>
+                        </Border>
+
+                        <!-- Buscar producto -->
+                        <TextBlock Text="BUSCAR PRODUCTO" Style="{StaticResource FieldLabel}"/>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="190"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBox Grid.Column="0" Style="{StaticResource LightInput}" Margin="0,0,8,0"
+                                     Text="{Binding BusquedaProducto, UpdateSourceTrigger=PropertyChanged}"/>
+                            <Button Grid.Column="1" Content="Buscar" Margin="0,0,8,0"
+                                    Style="{StaticResource ActionButton}" Background="#2563EB"
+                                    Command="{Binding BuscarProductoCommand}"/>
+                            <ComboBox Grid.Column="2" Background="White" Foreground="#111827"
+                                      BorderBrush="#D1D5DB" BorderThickness="1"
+                                      Padding="8,6" FontSize="13" Margin="0,0,8,0"
+                                      ItemsSource="{Binding ResultadosBusqueda}"
+                                      SelectedItem="{Binding ProductoSeleccionado, Mode=TwoWay}"
+                                      DisplayMemberPath="NombreEtiqueta"/>
+                            <Button Grid.Column="3" Content="+ Agregar"
+                                    Style="{StaticResource ActionButton}" Background="#1A7F37"
+                                    Command="{Binding AgregarProductoCommand}"/>
+                        </Grid>
+
+                        <!-- Detalle -->
+                        <TextBlock Text="DETALLE DE LA ORDEN" Style="{StaticResource FieldLabel}" Margin="0,20,0,8"/>
+                        <Border BorderBrush="#E5E7EB" BorderThickness="1" CornerRadius="4">
+                            <DataGrid ItemsSource="{Binding Detalles}"
+                                      Background="White"
+                                      RowBackground="White"
+                                      AlternatingRowBackground="#F9FAFB"
+                                      Foreground="#374151"
+                                      BorderThickness="0"
+                                      GridLinesVisibility="Horizontal"
+                                      HorizontalGridLinesBrush="#E5E7EB"
+                                      AutoGenerateColumns="False"
+                                      CanUserAddRows="False"
+                                      CanUserResizeRows="False"
+                                      SelectionMode="Single"
+                                      HeadersVisibility="Column"
+                                      CellStyle="{StaticResource LightCell}"
+                                      RowStyle="{StaticResource LightRow}">
+
+                                <DataGrid.ColumnHeaderStyle>
+                                    <Style TargetType="DataGridColumnHeader">
+                                        <Setter Property="Background" Value="#F9FAFB"/>
+                                        <Setter Property="Foreground" Value="#6B7280"/>
+                                        <Setter Property="Padding" Value="10,8"/>
+                                        <Setter Property="FontSize" Value="10"/>
+                                        <Setter Property="FontWeight" Value="Bold"/>
+                                        <Setter Property="BorderBrush" Value="#E5E7EB"/>
+                                        <Setter Property="BorderThickness" Value="0,0,0,1"/>
+                                    </Style>
+                                </DataGrid.ColumnHeaderStyle>
+
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="CÓDIGO"       Binding="{Binding Codigo}"                                Width="85"  IsReadOnly="True"/>
+                                    <DataGridTextColumn Header="NOMBRE"       Binding="{Binding NombreProducto}"                       Width="*"   IsReadOnly="True"/>
+                                    <DataGridTextColumn Header="PRECIO UNIT." Binding="{Binding PrecioUnitario, StringFormat='₡{0:N0}'}" Width="110" IsReadOnly="True"/>
+                                    <DataGridTextColumn Header="CANT."        Binding="{Binding Cantidad}"                             Width="60"  IsReadOnly="True"/>
+                                    <DataGridTextColumn Header="SUBTOTAL"     Binding="{Binding Subtotal, StringFormat='₡{0:N0}'}"     Width="105" IsReadOnly="True"/>
+                                    <DataGridTextColumn Header="IVA"          Binding="{Binding ImpuestoLinea, StringFormat='₡{0:N0}'}" Width="90" IsReadOnly="True"/>
+                                    <DataGridTemplateColumn Header="" Width="90">
+                                        <DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                                    <Button Content="+" Style="{StaticResource BtnIcon}" Background="#2563EB" Margin="2,0"
+                                                            Command="{Binding DataContext.IncrementarCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                                                            CommandParameter="{Binding}"/>
+                                                    <Button Content="−" Style="{StaticResource BtnIcon}" Background="#9CA3AF" Margin="2,0"
+                                                            Command="{Binding DataContext.DecrementarCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                                                            CommandParameter="{Binding}"/>
+                                                    <Button Content="✕" Style="{StaticResource BtnIcon}" Background="#DC2626" Margin="2,0"
+                                                            Command="{Binding DataContext.RemoverCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                                                            CommandParameter="{Binding}"/>
+                                                </StackPanel>
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn>
+                                </DataGrid.Columns>
+                            </DataGrid>
+                        </Border>
+
+                        <!-- Notas -->
+                        <TextBlock Text="NOTAS" Style="{StaticResource FieldLabel}"/>
+                        <TextBox Style="{StaticResource LightInput}"
+                                 Height="76" AcceptsReturn="True" TextWrapping="Wrap"
+                                 VerticalScrollBarVisibility="Auto"
+                                 Text="{Binding Notas, UpdateSourceTrigger=PropertyChanged}"/>
+
+                    </StackPanel>
+                </ScrollViewer>
+            </Border>
+
+            <!-- ═══ DERECHA: resumen ═══ -->
+            <Border Grid.Column="1" Background="White" BorderBrush="#E5E7EB" BorderThickness="1"
+                    CornerRadius="4">
+                <StackPanel Margin="20,22,20,22">
+
+                    <TextBlock Text="Resumen de Orden"
+                               Foreground="#111827" FontSize="14" FontWeight="SemiBold" Margin="0,0,0,14"/>
+                    <Rectangle Height="1" Fill="#E5E7EB" Margin="0,0,0,12"/>
+
+                    <Grid Margin="0,5,0,5">
+                        <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+                        <TextBlock Text="Subtotal" Foreground="#6B7280" FontSize="13"/>
+                        <TextBlock Grid.Column="1" Foreground="#374151" FontSize="13"
+                                   Text="{Binding SubtotalSinImpuesto, StringFormat='₡{0:N0}'}"/>
+                    </Grid>
+
+                    <Grid Margin="0,5,0,5">
+                        <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+                        <TextBlock Text="IVA (13%)" Foreground="#6B7280" FontSize="13"/>
+                        <TextBlock Grid.Column="1" Foreground="#374151" FontSize="13"
+                                   Text="{Binding TotalImpuesto, StringFormat='₡{0:N0}'}"/>
+                    </Grid>
+
+                    <Rectangle Height="1" Fill="#E5E7EB" Margin="0,8,0,8"/>
+
+                    <Grid Margin="0,4,0,24">
+                        <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+                        <TextBlock Text="Total" Foreground="#111827" FontSize="16" FontWeight="Bold"/>
+                        <TextBlock Grid.Column="1" Foreground="#111827" FontSize="16" FontWeight="Bold"
+                                   Text="{Binding TotalVenta, StringFormat='₡{0:N0}'}"/>
+                    </Grid>
+
+                    <Button Content="Procesar Orden"
+                            Style="{StaticResource ActionButton}"
+                            Background="#1A7F37"
+                            Padding="14,10"
+                            FontSize="13"
+                            HorizontalAlignment="Stretch"
+                            Margin="0,0,0,8"
+                            Command="{Binding ProcesarOrdenCommand}"/>
+
+                    <Button Content="Cancelar"
+                            Style="{StaticResource OutlineButton}"
+                            HorizontalAlignment="Stretch"
+                            Padding="14,10"/>
+
+                </StackPanel>
+            </Border>
+
+        </Grid>
     </Grid>
 </UserControl>

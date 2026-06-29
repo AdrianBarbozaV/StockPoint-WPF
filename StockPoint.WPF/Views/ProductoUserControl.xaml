@@ -145,78 +145,46 @@
         <UniformGrid Grid.Row="1" Columns="3" Margin="16,12,16,0">
 
             <Border Background="White" BorderBrush="#E5E7EB" BorderThickness="1"
-                    CornerRadius="4" Margin="0,0,6,0">
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="4"/>
-                        <ColumnDefinition Width="*"/>
-                    </Grid.ColumnDefinitions>
-                    <Border Grid.Column="0" Background="#3B82F6" CornerRadius="4,0,0,4"/>
-                    <StackPanel Grid.Column="1" Margin="14,11">
-                        <TextBlock Text="TOTAL PRODUCTOS" Foreground="#9CA3AF" FontSize="10" FontWeight="Bold"/>
-                        <TextBlock Text="{Binding TotalProductos}" Foreground="#111827" FontSize="28" FontWeight="Bold" Margin="0,2,0,0"/>
-                        <TextBlock Text="en catálogo" Foreground="#9CA3AF" FontSize="11"/>
-                    </StackPanel>
-                </Grid>
+                    CornerRadius="4" Margin="0,0,6,0" Padding="18,14">
+                <StackPanel>
+                    <TextBlock Text="TOTAL PRODUCTOS" Foreground="#9CA3AF" FontSize="10" FontWeight="Bold"/>
+                    <TextBlock Text="{Binding TotalProductos}" Foreground="#111827" FontSize="28" FontWeight="Bold" Margin="0,4,0,0"/>
+                    <TextBlock Text="en catálogo" Foreground="#9CA3AF" FontSize="11" Margin="0,2,0,0"/>
+                </StackPanel>
             </Border>
 
             <Border Background="White" BorderBrush="#E5E7EB" BorderThickness="1"
-                    CornerRadius="4" Margin="3,0">
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="4"/>
-                        <ColumnDefinition Width="*"/>
-                    </Grid.ColumnDefinitions>
-                    <Border Grid.Column="0" Background="#0D9488" CornerRadius="4,0,0,4"/>
-                    <StackPanel Grid.Column="1" Margin="14,11">
-                        <TextBlock Text="VALOR INVENTARIO" Foreground="#9CA3AF" FontSize="10" FontWeight="Bold"/>
-                        <StackPanel Orientation="Horizontal" Margin="0,2,0,0">
-                            <TextBlock Text="₡" Foreground="#111827" FontSize="15" FontWeight="Bold"
-                                       VerticalAlignment="Bottom" Margin="0,0,3,4"/>
-                            <TextBlock Text="{Binding ValorInventario, StringFormat=\{0:N0\}}"
-                                       Foreground="#111827" FontSize="28" FontWeight="Bold"/>
-                        </StackPanel>
-                        <TextBlock Text="valor total en stock" Foreground="#9CA3AF" FontSize="11"/>
+                    CornerRadius="4" Margin="3,0" Padding="18,14">
+                <StackPanel>
+                    <TextBlock Text="VALOR INVENTARIO" Foreground="#9CA3AF" FontSize="10" FontWeight="Bold"/>
+                    <StackPanel Orientation="Horizontal" Margin="0,4,0,0">
+                        <TextBlock Text="₡" Foreground="#111827" FontSize="15" FontWeight="Bold"
+                                   VerticalAlignment="Bottom" Margin="0,0,3,4"/>
+                        <TextBlock Text="{Binding ValorInventario, StringFormat=\{0:N0\}}"
+                                   Foreground="#111827" FontSize="28" FontWeight="Bold"/>
                     </StackPanel>
-                </Grid>
+                    <TextBlock Text="valor total en stock" Foreground="#9CA3AF" FontSize="11" Margin="0,2,0,0"/>
+                </StackPanel>
             </Border>
 
             <Border Background="White" BorderBrush="#E5E7EB" BorderThickness="1"
-                    CornerRadius="4" Margin="6,0,0,0">
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="4"/>
-                        <ColumnDefinition Width="*"/>
-                    </Grid.ColumnDefinitions>
-                    <Border Grid.Column="0" CornerRadius="4,0,0,4">
-                        <Border.Style>
-                            <Style TargetType="Border">
-                                <Setter Property="Background" Value="#6B7280"/>
+                    CornerRadius="4" Margin="6,0,0,0" Padding="18,14">
+                <StackPanel>
+                    <TextBlock Text="ALERTAS DE STOCK" Foreground="#9CA3AF" FontSize="10" FontWeight="Bold"/>
+                    <TextBlock Text="{Binding ProductosBajoStock}" FontSize="28" FontWeight="Bold" Margin="0,4,0,0">
+                        <TextBlock.Style>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="Foreground" Value="#111827"/>
                                 <Style.Triggers>
                                     <DataTrigger Binding="{Binding HayAlertaStock}" Value="True">
-                                        <Setter Property="Background" Value="#DC2626"/>
+                                        <Setter Property="Foreground" Value="#374151"/>
                                     </DataTrigger>
                                 </Style.Triggers>
                             </Style>
-                        </Border.Style>
-                    </Border>
-                    <StackPanel Grid.Column="1" Margin="14,11">
-                        <TextBlock Text="ALERTAS DE STOCK" Foreground="#9CA3AF" FontSize="10" FontWeight="Bold"/>
-                        <TextBlock Text="{Binding ProductosBajoStock}" FontSize="28" FontWeight="Bold" Margin="0,2,0,0">
-                            <TextBlock.Style>
-                                <Style TargetType="TextBlock">
-                                    <Setter Property="Foreground" Value="#6B7280"/>
-                                    <Style.Triggers>
-                                        <DataTrigger Binding="{Binding HayAlertaStock}" Value="True">
-                                            <Setter Property="Foreground" Value="#DC2626"/>
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </TextBlock.Style>
-                        </TextBlock>
-                        <TextBlock Text="productos en riesgo" Foreground="#9CA3AF" FontSize="11"/>
-                    </StackPanel>
-                </Grid>
+                        </TextBlock.Style>
+                    </TextBlock>
+                    <TextBlock Text="productos en riesgo" Foreground="#9CA3AF" FontSize="11" Margin="0,2,0,0"/>
+                </StackPanel>
             </Border>
         </UniformGrid>
 
