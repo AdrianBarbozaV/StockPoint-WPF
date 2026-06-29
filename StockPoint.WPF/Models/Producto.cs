@@ -69,13 +69,24 @@ namespace StockPoint.WPF.Models
         public int ExistenciaEnStock
         {
             get => _existenciaEnStock;
-            set { _existenciaEnStock = value; OnPropertyChanged(); }
+            set { _existenciaEnStock = value; OnPropertyChanged(); OnPropertyChanged(nameof(EstadoStock)); }
         }
 
         public int ExistenciaLimiteParaAlerta
         {
             get => _existenciaLimiteParaAlerta;
-            set { _existenciaLimiteParaAlerta = value; OnPropertyChanged(); }
+            set { _existenciaLimiteParaAlerta = value; OnPropertyChanged(); OnPropertyChanged(nameof(EstadoStock)); }
+        }
+
+        // "critico" | "alerta" | "ok" — usado por el semáforo del DataGrid
+        public string EstadoStock
+        {
+            get
+            {
+                if (ExistenciaEnStock == 0) return "critico";
+                if (ExistenciaLimiteParaAlerta > 0 && ExistenciaEnStock <= ExistenciaLimiteParaAlerta) return "alerta";
+                return "ok";
+            }
         }
 
         public bool PuedeVenderse
