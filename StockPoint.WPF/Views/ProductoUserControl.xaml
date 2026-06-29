@@ -15,14 +15,14 @@
             <Setter Property="BorderThickness" Value="0"/>
             <Setter Property="FontSize" Value="12"/>
             <Setter Property="FontWeight" Value="SemiBold"/>
-            <Setter Property="Padding" Value="14,7"/>
+            <Setter Property="Padding" Value="14,6"/>
             <Setter Property="Cursor" Value="Hand"/>
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
                         <Border x:Name="Bg"
                                 Background="{TemplateBinding Background}"
-                                CornerRadius="2"
+                                CornerRadius="6"
                                 Padding="{TemplateBinding Padding}">
                             <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
                         </Border>
@@ -73,6 +73,46 @@
             </Setter>
         </Style>
 
+        <!-- Botón outline neutro (Editar) -->
+        <Style x:Key="NavOutlineButton" TargetType="Button">
+            <Setter Property="Foreground" Value="#24292F"/>
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="BorderBrush" Value="#D0D7DE"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Padding" Value="14,6"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="Bg"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="6"
+                                Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Bg" Property="Background" Value="#F3F4F6"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter TargetName="Bg" Property="Opacity" Value="0.4"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Botón outline peligro (Eliminar) -->
+        <Style x:Key="NavDangerButton" TargetType="Button" BasedOn="{StaticResource NavOutlineButton}">
+            <Setter Property="Foreground" Value="#CF222E"/>
+            <Setter Property="BorderBrush" Value="#FFCDD2"/>
+        </Style>
+
         <!-- TextBox del formulario -->
         <Style x:Key="FormField" TargetType="TextBox">
             <Setter Property="Padding" Value="8,6"/>
@@ -102,47 +142,72 @@
         </Style>
     </UserControl.Resources>
 
-    <Grid Background="#F1F5F9">
+    <Grid Background="#F6F8FA">
         <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <!-- ══ Cabecera ══ -->
-        <Border Grid.Row="0" Background="#0F172A" Padding="20,13">
+        <!-- ══ Fila 0 — Tira de identidad (estilo GitHub) ══ -->
+        <Border Grid.Row="0" Background="#24292F" Padding="16,10">
+            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                <!-- Ícono de caja (texto unicode, sin dependencias) -->
+                <TextBlock Text="▣" Foreground="#6E7681" FontSize="14"
+                           VerticalAlignment="Center" Margin="0,0,10,0"/>
+                <TextBlock Text="StockPoint" Foreground="#E6EDF3"
+                           FontSize="13" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                <TextBlock Text=" / " Foreground="#6E7681"
+                           FontSize="13" VerticalAlignment="Center"/>
+                <TextBlock Text="Gestión de Productos" Foreground="#E6EDF3"
+                           FontSize="13" FontWeight="SemiBold" VerticalAlignment="Center"/>
+            </StackPanel>
+        </Border>
+
+        <!-- ══ Fila 1 — Barra de tabs + acciones (estilo GitHub) ══ -->
+        <Border Grid.Row="1" Background="White"
+                BorderBrush="#D0D7DE" BorderThickness="0,0,0,1"
+                Padding="8,0,16,0">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
 
-                <StackPanel VerticalAlignment="Center">
-                    <TextBlock Text="Gestión de Productos"
-                               Foreground="#F8FAFC" FontSize="17" FontWeight="SemiBold"/>
-                    <TextBlock Text="Catálogo · Inventario · Precios"
-                               Foreground="#475569" FontSize="11" Margin="0,1,0,0"/>
+                <!-- Tab activo con subrayado -->
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Stretch">
+                    <Border BorderBrush="#2563EB" BorderThickness="0,0,0,2"
+                            Padding="14,10,14,8" Margin="0,0,4,0">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="☰" Foreground="#57606A"
+                                       FontSize="12" VerticalAlignment="Center" Margin="0,0,6,0"/>
+                            <TextBlock Text="Productos" Foreground="#1F2328"
+                                       FontSize="13" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </Border>
                 </StackPanel>
 
-                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                <!-- Botones de acción alineados a la derecha -->
+                <StackPanel Grid.Column="1" Orientation="Horizontal"
+                            VerticalAlignment="Center" Margin="0,6">
                     <Button Content="Nuevo"
                             Style="{StaticResource ActionButton}"
                             Command="{Binding NewCommand}"
-                            Background="#2563EB" Margin="0,0,6,0"/>
+                            Background="#1A7F37" Margin="0,0,6,0"/>
                     <Button Content="Editar"
-                            Style="{StaticResource ActionButton}"
+                            Style="{StaticResource NavOutlineButton}"
                             Command="{Binding EditCommand}"
-                            Background="#334155" Margin="0,0,6,0"/>
+                            Margin="0,0,6,0"/>
                     <Button Content="Eliminar"
-                            Style="{StaticResource ActionButton}"
-                            Command="{Binding DeleteCommand}"
-                            Background="#991B1B"/>
+                            Style="{StaticResource NavDangerButton}"
+                            Command="{Binding DeleteCommand}"/>
                 </StackPanel>
             </Grid>
         </Border>
 
         <!-- ══ Tarjetas de resumen ══ -->
-        <UniformGrid Grid.Row="1" Columns="3" Margin="16,14,16,0">
+        <UniformGrid Grid.Row="2" Columns="3" Margin="16,14,16,0">
 
             <Border Background="White" BorderBrush="#E2E8F0" BorderThickness="1"
                     CornerRadius="3" Margin="0,0,7,0">
@@ -226,7 +291,7 @@
         </UniformGrid>
 
         <!-- ══ Área de trabajo: DataGrid + Formulario ══ -->
-        <Grid Grid.Row="2" Margin="16,14,16,16" ClipToBounds="True">
+        <Grid Grid.Row="3" Margin="16,14,16,16" ClipToBounds="True">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="Auto"/>
