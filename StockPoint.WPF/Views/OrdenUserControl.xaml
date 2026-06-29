@@ -7,6 +7,10 @@
              d:DesignHeight="700" d:DesignWidth="1000"
              Background="#0f172a">
 
+    <UserControl.DataContext>
+        <vm:OrdenViewModel xmlns:vm="clr-namespace:StockPoint.WPF.ViewModels"/>
+    </UserControl.DataContext>
+
     <UserControl.Resources>
 
         <!-- Botón base con esquinas redondeadas -->
