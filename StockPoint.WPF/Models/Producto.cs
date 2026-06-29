@@ -5,52 +5,105 @@ namespace StockPoint.WPF.Models
 {
     public class Producto : INotifyPropertyChanged
     {
-        private int productoId;
-        private string codigo = string.Empty;
-        private string nombre = string.Empty;
-        private decimal precioUnitario;
-        private bool tieneImpuesto;
-        private int stock;
+        private int _productId;
+        private string _codigoBarra = string.Empty;
+        private string _nombreEtiqueta = string.Empty;
+        private string _descripcion = string.Empty;
+        private decimal _precioNeto;
+        private decimal _precioMinimo;
+        private bool _tieneImpuesto;
+        private decimal _impuestoValorAgregado;
+        private int _existenciaEnStock;
+        private int _existenciaLimiteParaAlerta;
+        private bool _puedeVenderse = true;
+        private bool _puedeComprarse = true;
 
-        public event PropertyChangedEventHandler? PropertyChanged;
-
-        public int ProductoId
+        public int ProductId
         {
-            get => productoId;
-            set { if (productoId != value) { productoId = value; OnPropertyChanged(); } }
+            get => _productId;
+            set { _productId = value; OnPropertyChanged(); }
         }
 
-        public string Codigo
+        public string CodigoBarra
         {
-            get => codigo;
-            set { if (codigo != value) { codigo = value; OnPropertyChanged(); } }
+            get => _codigoBarra;
+            set { _codigoBarra = value; OnPropertyChanged(); }
         }
 
-        public string Nombre
+        public string NombreEtiqueta
         {
-            get => nombre;
-            set { if (nombre != value) { nombre = value; OnPropertyChanged(); } }
+            get => _nombreEtiqueta;
+            set { _nombreEtiqueta = value; OnPropertyChanged(); }
         }
 
-        public decimal PrecioUnitario
+        public string Descripcion
         {
-            get => precioUnitario;
-            set { if (precioUnitario != value) { precioUnitario = value; OnPropertyChanged(); } }
+            get => _descripcion;
+            set { _descripcion = value; OnPropertyChanged(); }
+        }
+
+        public decimal PrecioNeto
+        {
+            get => _precioNeto;
+            set { _precioNeto = value; OnPropertyChanged(); }
+        }
+
+        public decimal PrecioMinimo
+        {
+            get => _precioMinimo;
+            set { _precioMinimo = value; OnPropertyChanged(); }
         }
 
         public bool TieneImpuesto
         {
-            get => tieneImpuesto;
-            set { if (tieneImpuesto != value) { tieneImpuesto = value; OnPropertyChanged(); } }
+            get => _tieneImpuesto;
+            set { _tieneImpuesto = value; OnPropertyChanged(); }
         }
 
-        public int Stock
+        public decimal ImpuestoValorAgregado
         {
-            get => stock;
-            set { if (stock != value) { stock = value; OnPropertyChanged(); } }
+            get => _impuestoValorAgregado;
+            set { _impuestoValorAgregado = value; OnPropertyChanged(); }
         }
 
-        protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)
-            => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        public int ExistenciaEnStock
+        {
+            get => _existenciaEnStock;
+            set { _existenciaEnStock = value; OnPropertyChanged(); OnPropertyChanged(nameof(EstadoStock)); }
+        }
+
+        public int ExistenciaLimiteParaAlerta
+        {
+            get => _existenciaLimiteParaAlerta;
+            set { _existenciaLimiteParaAlerta = value; OnPropertyChanged(); OnPropertyChanged(nameof(EstadoStock)); }
+        }
+
+        public bool PuedeVenderse
+        {
+            get => _puedeVenderse;
+            set { _puedeVenderse = value; OnPropertyChanged(); }
+        }
+
+        public bool PuedeComprarse
+        {
+            get => _puedeComprarse;
+            set { _puedeComprarse = value; OnPropertyChanged(); }
+        }
+
+        // "ok" | "alerta" | "critico" — usado por el semáforo del DataGrid
+        public string EstadoStock
+        {
+            get
+            {
+                if (ExistenciaEnStock == 0) return "critico";
+                if (ExistenciaLimiteParaAlerta > 0 && ExistenciaEnStock <= ExistenciaLimiteParaAlerta) return "alerta";
+                return "ok";
+            }
+        }
+
+        public event PropertyChangedEventHandler? PropertyChanged;
+
+        protected void OnPropertyChanged([CallerMemberName] string? name = null)
+            => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
     }
 }

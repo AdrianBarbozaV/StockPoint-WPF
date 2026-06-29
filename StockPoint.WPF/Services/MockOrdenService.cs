@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Net.Http;
 using System.Threading.Tasks;
 using StockPoint.WPF.Models;
 
@@ -17,10 +16,10 @@ namespace StockPoint.WPF.Services
 
         public Task<List<Producto>> BuscarProductosAsync(string query) => Task.FromResult(new List<Producto>
         {
-            new() { ProductoId = 1, Codigo = "P001", Nombre = "Laptop Lenovo",   PrecioUnitario = 450000, TieneImpuesto = true,  Stock = 10 },
-            new() { ProductoId = 2, Codigo = "P002", Nombre = "Mouse Logitech",  PrecioUnitario = 12000,  TieneImpuesto = true,  Stock = 50 },
-            new() { ProductoId = 3, Codigo = "P003", Nombre = "Cable HDMI 2m",   PrecioUnitario = 4500,   TieneImpuesto = false, Stock = 30 },
-            new() { ProductoId = 4, Codigo = "P004", Nombre = "Teclado mecánico",PrecioUnitario = 35000,  TieneImpuesto = true,  Stock = 15 },
+            new() { ProductId = 1, CodigoBarra = "P001", NombreEtiqueta = "Laptop Lenovo",    PrecioNeto = 450000, TieneImpuesto = true,  ExistenciaEnStock = 10 },
+            new() { ProductId = 2, CodigoBarra = "P002", NombreEtiqueta = "Mouse Logitech",   PrecioNeto = 12000,  TieneImpuesto = true,  ExistenciaEnStock = 50 },
+            new() { ProductId = 3, CodigoBarra = "P003", NombreEtiqueta = "Cable HDMI 2m",    PrecioNeto = 4500,   TieneImpuesto = false, ExistenciaEnStock = 30 },
+            new() { ProductId = 4, CodigoBarra = "P004", NombreEtiqueta = "Teclado mecánico", PrecioNeto = 35000,  TieneImpuesto = true,  ExistenciaEnStock = 15 },
         });
 
         public Task ProcesarOrdenAsync(Orden orden) => Task.CompletedTask;

@@ -74,16 +74,16 @@ namespace StockPoint.WPF.ViewModels
         [RelayCommand(CanExecute = nameof(CanAgregarProducto))]
         private void AgregarProducto()
         {
-            var existente = Detalles.FirstOrDefault(d => d.ProductoId == ProductoSeleccionado!.ProductoId);
+            var existente = Detalles.FirstOrDefault(d => d.ProductoId == ProductoSeleccionado!.ProductId);
             if (existente != null) { existente.Cantidad++; }
             else
             {
                 Detalles.Add(new OrdenDetalle
                 {
-                    ProductoId = ProductoSeleccionado!.ProductoId,
-                    Codigo = ProductoSeleccionado.Codigo,
-                    NombreProducto = ProductoSeleccionado.Nombre,
-                    PrecioUnitario = ProductoSeleccionado.PrecioUnitario,
+                    ProductoId = ProductoSeleccionado!.ProductId,
+                    Codigo = ProductoSeleccionado.CodigoBarra,
+                    NombreProducto = ProductoSeleccionado.NombreEtiqueta,
+                    PrecioUnitario = ProductoSeleccionado.PrecioNeto,
                     TieneImpuesto = ProductoSeleccionado.TieneImpuesto,
                     Cantidad = 1
                 });
