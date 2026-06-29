@@ -1,0 +1,176 @@
+<UserControl x:Class="StockPoint.WPF.Views.ProductoUserControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d"
+             d:DesignHeight="620" d:DesignWidth="1000">
+
+    <UserControl.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolToVis"/>
+
+        <Style TargetType="Button">
+            <Setter Property="MinWidth" Value="80"/>
+            <Setter Property="Padding" Value="12,5"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+        </Style>
+
+        <Style TargetType="TextBox">
+            <Setter Property="Padding" Value="5,4"/>
+            <Setter Property="Margin" Value="0,2,0,8"/>
+        </Style>
+
+        <Style TargetType="TextBlock">
+            <Setter Property="Margin" Value="0,6,0,1"/>
+            <Setter Property="FontSize" Value="12"/>
+        </Style>
+
+        <Style TargetType="CheckBox">
+            <Setter Property="Margin" Value="0,6,0,4"/>
+        </Style>
+    </UserControl.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- ══ Header ══ -->
+        <Border Grid.Row="0" Background="#2C3E50" Padding="16,10">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <StackPanel VerticalAlignment="Center">
+                    <TextBlock Text="Gestión de Productos"
+                               Foreground="White" FontSize="18" FontWeight="Bold"
+                               Margin="0"/>
+                    <TextBlock Text="CRUD — Vista 1"
+                               Foreground="#BDC3C7" FontSize="11" Margin="0"/>
+                </StackPanel>
+
+                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                    <Button Content="＋ Nuevo"
+                            Command="{Binding NewCommand}"
+                            Background="#27AE60" Foreground="White"
+                            Margin="0,0,8,0"/>
+                    <Button Content="✎ Editar"
+                            Command="{Binding EditCommand}"
+                            Background="#2980B9" Foreground="White"
+                            Margin="0,0,8,0"/>
+                    <Button Content="✕ Eliminar"
+                            Command="{Binding DeleteCommand}"
+                            Background="#C0392B" Foreground="White"/>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <!-- ══ Contenido: DataGrid + Panel formulario ══ -->
+        <Grid Grid.Row="1" Margin="12">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <!-- La columna del form se contrae cuando el panel está Collapsed -->
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- DataGrid -->
+            <DataGrid Grid.Column="0"
+                      ItemsSource="{Binding Productos}"
+                      SelectedItem="{Binding SelectedProducto}"
+                      AutoGenerateColumns="False"
+                      IsReadOnly="True"
+                      SelectionMode="Single"
+                      GridLinesVisibility="Horizontal"
+                      AlternatingRowBackground="#F5F6FA"
+                      RowHeight="30"
+                      Margin="0,0,12,0"
+                      CanUserResizeRows="False">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="Código"   Binding="{Binding CodigoBarra}"    Width="110"/>
+                    <DataGridTextColumn Header="Nombre"   Binding="{Binding NombreEtiqueta}" Width="*"/>
+                    <DataGridTextColumn Header="Precio"   Binding="{Binding PrecioNeto, StringFormat={}{0:N2}}" Width="90"/>
+                    <DataGridTextColumn Header="Stock"    Binding="{Binding ExistenciaEnStock}" Width="65"/>
+                    <DataGridCheckBoxColumn Header="IVA"  Binding="{Binding TieneImpuesto}"  Width="50"/>
+                    <DataGridCheckBoxColumn Header="Vende" Binding="{Binding PuedeVenderse}" Width="65"/>
+                </DataGrid.Columns>
+            </DataGrid>
+
+            <!-- ══ Formulario maestro-detalle ══ -->
+            <Border Grid.Column="1" Width="300"
+                    Visibility="{Binding IsFormVisible, Converter={StaticResource BoolToVis}}"
+                    BorderBrush="#D5D8DC" BorderThickness="1"
+                    Background="#FDFEFE">
+
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <StackPanel Margin="14,12">
+
+                        <TextBlock Text="{Binding FormTitle}"
+                                   FontSize="15" FontWeight="Bold"
+                                   Foreground="#2C3E50" Margin="0,0,0,10"/>
+
+                        <!-- Código de barra -->
+                        <TextBlock Text="Código de barra"/>
+                        <TextBox Text="{Binding Form.CodigoBarra, UpdateSourceTrigger=PropertyChanged}"/>
+
+                        <!-- Nombre (requerido) -->
+                        <TextBlock Text="Nombre *" FontWeight="SemiBold"/>
+                        <TextBox Text="{Binding Form.NombreEtiqueta, UpdateSourceTrigger=PropertyChanged}"/>
+
+                        <!-- Descripción -->
+                        <TextBlock Text="Descripción"/>
+                        <TextBox Text="{Binding Form.Descripcion, UpdateSourceTrigger=PropertyChanged}"
+                                 AcceptsReturn="True" Height="58"
+                                 TextWrapping="Wrap"
+                                 VerticalScrollBarVisibility="Auto"/>
+
+                        <!-- Precios -->
+                        <TextBlock Text="Precio neto"/>
+                        <TextBox Text="{Binding Form.PrecioNeto, UpdateSourceTrigger=PropertyChanged}"/>
+
+                        <TextBlock Text="Precio mínimo"/>
+                        <TextBox Text="{Binding Form.PrecioMinimo, UpdateSourceTrigger=PropertyChanged}"/>
+
+                        <!-- Impuesto -->
+                        <CheckBox Content="Tiene impuesto (IVA)"
+                                  IsChecked="{Binding Form.TieneImpuesto}"/>
+
+                        <TextBlock Text="IVA (%)"
+                                   Visibility="{Binding Form.TieneImpuesto, Converter={StaticResource BoolToVis}}"/>
+                        <TextBox Text="{Binding Form.ImpuestoValorAgregado, UpdateSourceTrigger=PropertyChanged}"
+                                 Visibility="{Binding Form.TieneImpuesto, Converter={StaticResource BoolToVis}}"/>
+
+                        <!-- Stock -->
+                        <TextBlock Text="Stock actual"/>
+                        <TextBox Text="{Binding Form.ExistenciaEnStock, UpdateSourceTrigger=PropertyChanged}"/>
+
+                        <TextBlock Text="Límite de alerta"/>
+                        <TextBox Text="{Binding Form.ExistenciaLimiteParaAlerta, UpdateSourceTrigger=PropertyChanged}"/>
+
+                        <!-- Flags -->
+                        <CheckBox Content="Puede venderse"  IsChecked="{Binding Form.PuedeVenderse}"/>
+                        <CheckBox Content="Puede comprarse" IsChecked="{Binding Form.PuedeComprarse}"/>
+
+                        <Separator Margin="0,8,0,10"/>
+
+                        <!-- Acciones del formulario -->
+                        <StackPanel Orientation="Horizontal">
+                            <Button Content="Guardar"
+                                    Command="{Binding SaveCommand}"
+                                    Background="#27AE60" Foreground="White"
+                                    Margin="0,0,8,0"/>
+                            <Button Content="Cancelar"
+                                    Command="{Binding CancelCommand}"
+                                    Background="#95A5A6" Foreground="White"/>
+                        </StackPanel>
+
+                    </StackPanel>
+                </ScrollViewer>
+            </Border>
+        </Grid>
+    </Grid>
+</UserControl>
