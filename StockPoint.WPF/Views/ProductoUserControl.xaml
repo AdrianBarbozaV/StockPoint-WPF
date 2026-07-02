@@ -3,11 +3,14 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:converters="clr-namespace:StockPoint.WPF.Converters"
              mc:Ignorable="d"
              d:DesignHeight="680" d:DesignWidth="1100">
 
     <UserControl.Resources>
         <BooleanToVisibilityConverter x:Key="BoolToVis"/>
+        <converters:InverseBooleanConverter x:Key="InverseBool"/>
+        <converters:InverseBooleanToVisibilityConverter x:Key="InverseBoolToVis"/>
 
         <Style x:Key="ActionButton" TargetType="Button">
             <Setter Property="Foreground" Value="White"/>
@@ -249,6 +252,10 @@
                           BorderBrush="#E5E7EB" Background="White"
                           RowBackground="White" AlternatingRowBackground="#F9FAFB">
 
+                    <DataGrid.InputBindings>
+                        <MouseBinding MouseAction="LeftDoubleClick" Command="{Binding ViewCommand}"/>
+                    </DataGrid.InputBindings>
+
                     <DataGrid.ColumnHeaderStyle>
                         <Style TargetType="DataGridColumnHeader">
                             <Setter Property="Background" Value="#F9FAFB"/>
@@ -325,8 +332,46 @@
                         <DataGridTextColumn Header="Nombre"     Binding="{Binding NombreEtiqueta}" Width="*"/>
                         <DataGridTextColumn Header="Precio (₡)" Binding="{Binding PrecioNeto, StringFormat=\{0:N2\}}" Width="110"/>
                         <DataGridTextColumn Header="Stock"      Binding="{Binding ExistenciaEnStock}" Width="70"/>
-                        <DataGridCheckBoxColumn Header="IVA"    Binding="{Binding TieneImpuesto}"  Width="55"/>
-                        <DataGridCheckBoxColumn Header="Vende"  Binding="{Binding PuedeVenderse}"  Width="65"/>
+                        <DataGridTemplateColumn Header="IVA" Width="55" CanUserSort="False">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock HorizontalAlignment="Center" FontSize="13" FontWeight="Bold">
+                                        <TextBlock.Style>
+                                            <Style TargetType="TextBlock">
+                                                <Setter Property="Text" Value="—"/>
+                                                <Setter Property="Foreground" Value="#D1D5DB"/>
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding TieneImpuesto}" Value="True">
+                                                        <Setter Property="Text" Value="✓"/>
+                                                        <Setter Property="Foreground" Value="#2563EB"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </TextBlock.Style>
+                                    </TextBlock>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTemplateColumn Header="Vende" Width="65" CanUserSort="False">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock HorizontalAlignment="Center" FontSize="13" FontWeight="Bold">
+                                        <TextBlock.Style>
+                                            <Style TargetType="TextBlock">
+                                                <Setter Property="Text" Value="—"/>
+                                                <Setter Property="Foreground" Value="#D1D5DB"/>
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding PuedeVenderse}" Value="True">
+                                                        <Setter Property="Text" Value="✓"/>
+                                                        <Setter Property="Foreground" Value="#1A7F37"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </TextBlock.Style>
+                                    </TextBlock>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
                     </DataGrid.Columns>
                 </DataGrid>
             </Grid>
@@ -382,15 +427,18 @@
                         <StackPanel Margin="16,10,16,4">
 
                             <TextBlock Text="CÓDIGO DE BARRA" Foreground="#9CA3AF" FontSize="10" FontWeight="Bold" Margin="0,0,0,3"/>
-                            <TextBox Text="{Binding Form.CodigoBarra, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource FormField}"/>
+                            <TextBox Text="{Binding Form.CodigoBarra, UpdateSourceTrigger=PropertyChanged}"
+                                     IsReadOnly="{Binding IsViewMode}" Style="{StaticResource FormField}"/>
 
                             <TextBlock Foreground="#9CA3AF" FontSize="10" FontWeight="Bold" Margin="0,4,0,3">
                                 <Run Text="NOMBRE"/><Run Text=" *" Foreground="#DC2626"/>
                             </TextBlock>
-                            <TextBox Text="{Binding Form.NombreEtiqueta, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource FormField}"/>
+                            <TextBox Text="{Binding Form.NombreEtiqueta, UpdateSourceTrigger=PropertyChanged}"
+                                     IsReadOnly="{Binding IsViewMode}" Style="{StaticResource FormField}"/>
 
                             <TextBlock Text="DESCRIPCIÓN" Foreground="#9CA3AF" FontSize="10" FontWeight="Bold" Margin="0,4,0,3"/>
                             <TextBox Text="{Binding Form.Descripcion, UpdateSourceTrigger=PropertyChanged}"
+                                     IsReadOnly="{Binding IsViewMode}"
                                      Style="{StaticResource FormField}"
                                      AcceptsReturn="True" Height="60" TextWrapping="Wrap"
                                      VerticalScrollBarVisibility="Auto"/>
@@ -399,33 +447,43 @@
                             <Separator Background="#F3F4F6" Margin="0,0,0,8"/>
 
                             <TextBlock Text="PRECIO NETO (₡)" Foreground="#9CA3AF" FontSize="10" FontWeight="Bold" Margin="0,0,0,3"/>
-                            <TextBox Text="{Binding Form.PrecioNeto, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource FormField}"/>
+                            <TextBox Text="{Binding Form.PrecioNeto, UpdateSourceTrigger=PropertyChanged}"
+                                     IsReadOnly="{Binding IsViewMode}" Style="{StaticResource FormField}"/>
 
                             <TextBlock Text="PRECIO MÍNIMO (₡)" Foreground="#9CA3AF" FontSize="10" FontWeight="Bold" Margin="0,4,0,3"/>
-                            <TextBox Text="{Binding Form.PrecioMinimo, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource FormField}"/>
+                            <TextBox Text="{Binding Form.PrecioMinimo, UpdateSourceTrigger=PropertyChanged}"
+                                     IsReadOnly="{Binding IsViewMode}" Style="{StaticResource FormField}"/>
 
                             <CheckBox Content="Tiene impuesto (IVA)" IsChecked="{Binding Form.TieneImpuesto}"
+                                      IsEnabled="{Binding IsViewMode, Converter={StaticResource InverseBool}}"
                                       Foreground="#374151" FontSize="13" Margin="0,4,0,8"/>
                             <StackPanel Visibility="{Binding Form.TieneImpuesto, Converter={StaticResource BoolToVis}}">
                                 <TextBlock Text="IVA (%)" Foreground="#9CA3AF" FontSize="10" FontWeight="Bold" Margin="0,0,0,3"/>
-                                <TextBox Text="{Binding Form.ImpuestoValorAgregado, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource FormField}"/>
+                                <TextBox Text="{Binding Form.ImpuestoValorAgregado, UpdateSourceTrigger=PropertyChanged}"
+                                         IsReadOnly="{Binding IsViewMode}" Style="{StaticResource FormField}"/>
                             </StackPanel>
 
                             <TextBlock Text="INVENTARIO" Foreground="#9CA3AF" FontSize="10" FontWeight="Bold" Margin="0,8,0,4"/>
                             <Separator Background="#F3F4F6" Margin="0,0,0,8"/>
 
                             <TextBlock Text="STOCK ACTUAL" Foreground="#9CA3AF" FontSize="10" FontWeight="Bold" Margin="0,0,0,3"/>
-                            <TextBox Text="{Binding Form.ExistenciaEnStock, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource FormField}"/>
+                            <TextBox Text="{Binding Form.ExistenciaEnStock, UpdateSourceTrigger=PropertyChanged}"
+                                     IsReadOnly="{Binding IsViewMode}" Style="{StaticResource FormField}"/>
 
                             <TextBlock Text="LÍMITE DE ALERTA" Foreground="#9CA3AF" FontSize="10" FontWeight="Bold" Margin="0,4,0,3"/>
-                            <TextBox Text="{Binding Form.ExistenciaLimiteParaAlerta, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource FormField}"/>
+                            <TextBox Text="{Binding Form.ExistenciaLimiteParaAlerta, UpdateSourceTrigger=PropertyChanged}"
+                                     IsReadOnly="{Binding IsViewMode}" Style="{StaticResource FormField}"/>
 
                             <TextBlock Text="DISPONIBILIDAD" Foreground="#9CA3AF" FontSize="10" FontWeight="Bold" Margin="0,8,0,4"/>
                             <Separator Background="#F3F4F6" Margin="0,0,0,8"/>
 
                             <CheckBox Content="Puede venderse"  IsChecked="{Binding Form.PuedeVenderse}"
+                                      IsEnabled="{Binding IsViewMode, Converter={StaticResource InverseBool}}"
+                                      ToolTip="Si está desmarcado, el producto no debería ofrecerse al buscar productos para una orden de venta."
                                       Foreground="#374151" FontSize="13" Margin="0,0,0,6"/>
                             <CheckBox Content="Puede comprarse" IsChecked="{Binding Form.PuedeComprarse}"
+                                      IsEnabled="{Binding IsViewMode, Converter={StaticResource InverseBool}}"
+                                      ToolTip="Indica si el producto puede reingresarse mediante compras a proveedores (reposición de inventario). Este proyecto no incluye un módulo de compras; el campo se conserva por trazabilidad con el modelo de dominio."
                                       Foreground="#374151" FontSize="13" Margin="0,0,0,4"/>
                         </StackPanel>
                     </ScrollViewer>
@@ -434,8 +492,9 @@
                             BorderBrush="#E5E7EB" BorderThickness="0,1,0,0" Padding="16,12">
                         <StackPanel Orientation="Horizontal">
                             <Button Content="Guardar" Style="{StaticResource FormPrimary}"
-                                    Command="{Binding SaveCommand}" Margin="0,0,8,0"/>
-                            <Button Content="Cancelar" Style="{StaticResource OutlineButton}"
+                                    Command="{Binding SaveCommand}" Margin="0,0,8,0"
+                                    Visibility="{Binding IsViewMode, Converter={StaticResource InverseBoolToVis}}"/>
+                            <Button Content="{Binding CloseButtonText}" Style="{StaticResource OutlineButton}"
                                     Command="{Binding CancelCommand}"/>
                         </StackPanel>
                     </Border>

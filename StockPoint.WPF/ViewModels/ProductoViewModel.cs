@@ -30,7 +30,13 @@ namespace StockPoint.WPF.ViewModels
         private bool _isFormVisible;
 
         [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(CloseButtonText))]
+        private bool _isViewMode;
+
+        [ObservableProperty]
         private string _formTitle = string.Empty;
+
+        public string CloseButtonText => IsViewMode ? "Cerrar" : "Cancelar";
 
         [ObservableProperty]
         private string _searchText = string.Empty;
@@ -92,6 +98,7 @@ namespace StockPoint.WPF.ViewModels
             _isNew = true;
             Form = new Producto();
             FormTitle = "Nuevo producto";
+            IsViewMode = false;
             IsFormVisible = true;
         }
 
@@ -99,24 +106,36 @@ namespace StockPoint.WPF.ViewModels
         private void Edit()
         {
             _isNew = false;
-            Form = new Producto
-            {
-                ProductId                  = SelectedProducto!.ProductId,
-                CodigoBarra                = SelectedProducto.CodigoBarra,
-                NombreEtiqueta             = SelectedProducto.NombreEtiqueta,
-                Descripcion                = SelectedProducto.Descripcion,
-                PrecioNeto                 = SelectedProducto.PrecioNeto,
-                PrecioMinimo               = SelectedProducto.PrecioMinimo,
-                TieneImpuesto              = SelectedProducto.TieneImpuesto,
-                ImpuestoValorAgregado      = SelectedProducto.ImpuestoValorAgregado,
-                ExistenciaEnStock          = SelectedProducto.ExistenciaEnStock,
-                ExistenciaLimiteParaAlerta = SelectedProducto.ExistenciaLimiteParaAlerta,
-                PuedeVenderse              = SelectedProducto.PuedeVenderse,
-                PuedeComprarse             = SelectedProducto.PuedeComprarse,
-            };
+            Form = CopiarDeSeleccionado();
             FormTitle = "Editar producto";
+            IsViewMode = false;
             IsFormVisible = true;
         }
+
+        [RelayCommand(CanExecute = nameof(HasSelection))]
+        private void View()
+        {
+            Form = CopiarDeSeleccionado();
+            FormTitle = "Detalles del producto";
+            IsViewMode = true;
+            IsFormVisible = true;
+        }
+
+        private Producto CopiarDeSeleccionado() => new()
+        {
+            ProductId                  = SelectedProducto!.ProductId,
+            CodigoBarra                = SelectedProducto.CodigoBarra,
+            NombreEtiqueta             = SelectedProducto.NombreEtiqueta,
+            Descripcion                = SelectedProducto.Descripcion,
+            PrecioNeto                 = SelectedProducto.PrecioNeto,
+            PrecioMinimo               = SelectedProducto.PrecioMinimo,
+            TieneImpuesto              = SelectedProducto.TieneImpuesto,
+            ImpuestoValorAgregado      = SelectedProducto.ImpuestoValorAgregado,
+            ExistenciaEnStock          = SelectedProducto.ExistenciaEnStock,
+            ExistenciaLimiteParaAlerta = SelectedProducto.ExistenciaLimiteParaAlerta,
+            PuedeVenderse              = SelectedProducto.PuedeVenderse,
+            PuedeComprarse             = SelectedProducto.PuedeComprarse,
+        };
 
         [RelayCommand]
         private async Task SaveAsync()
@@ -177,6 +196,7 @@ namespace StockPoint.WPF.ViewModels
         {
             EditCommand.NotifyCanExecuteChanged();
             DeleteCommand.NotifyCanExecuteChanged();
+            ViewCommand.NotifyCanExecuteChanged();
         }
     }
 }
