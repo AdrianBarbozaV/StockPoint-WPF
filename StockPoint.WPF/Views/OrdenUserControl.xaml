@@ -12,6 +12,8 @@
 
     <UserControl.Resources>
 
+        <BooleanToVisibilityConverter x:Key="BoolToVis"/>
+
         <Style x:Key="ActionButton" TargetType="Button">
             <Setter Property="Foreground" Value="White"/>
             <Setter Property="BorderThickness" Value="0"/>
@@ -188,24 +190,145 @@
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*"/>
                                 <ColumnDefinition Width="Auto"/>
-                                <ColumnDefinition Width="190"/>
-                                <ColumnDefinition Width="Auto"/>
                             </Grid.ColumnDefinitions>
-                            <TextBox Grid.Column="0" Style="{StaticResource LightInput}" Margin="0,0,8,0"
-                                     Text="{Binding BusquedaProducto, UpdateSourceTrigger=PropertyChanged}"/>
-                            <Button Grid.Column="1" Content="Buscar" Margin="0,0,8,0"
-                                    Style="{StaticResource ActionButton}" Background="#2563EB"
-                                    Command="{Binding BuscarProductoCommand}"/>
-                            <ComboBox Grid.Column="2" Background="White" Foreground="#111827"
-                                      BorderBrush="#D1D5DB" BorderThickness="1"
-                                      Padding="8,6" FontSize="13" Margin="0,0,8,0"
-                                      ItemsSource="{Binding ResultadosBusqueda}"
-                                      SelectedItem="{Binding ProductoSeleccionado, Mode=TwoWay}"
-                                      DisplayMemberPath="NombreEtiqueta"/>
-                            <Button Grid.Column="3" Content="+ Agregar"
+
+                            <!-- TextBox + botón ✕ + popup de resultados -->
+                            <Grid Grid.Column="0">
+                                <TextBox x:Name="txtBuscar"
+                                         Height="36"
+                                         Padding="10,0,34,0"
+                                         VerticalContentAlignment="Center"
+                                         Style="{StaticResource LightInput}"
+                                         Text="{Binding BusquedaProducto, UpdateSourceTrigger=PropertyChanged}"/>
+
+                                <!-- Placeholder -->
+                                <TextBlock Text="Buscar por nombre o código…"
+                                           Foreground="#D1D5DB" FontSize="13"
+                                           VerticalAlignment="Center" Margin="12,0,0,0"
+                                           IsHitTestVisible="False">
+                                    <TextBlock.Style>
+                                        <Style TargetType="TextBlock">
+                                            <Setter Property="Visibility" Value="Collapsed"/>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding HasSearchText}" Value="False">
+                                                    <Setter Property="Visibility" Value="Visible"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </TextBlock.Style>
+                                </TextBlock>
+
+                                <!-- Botón limpiar búsqueda -->
+                                <Button Width="24" Height="24"
+                                        HorizontalAlignment="Right" VerticalAlignment="Center"
+                                        Margin="0,0,6,0"
+                                        Content="✕" FontSize="11"
+                                        Foreground="#9CA3AF" Background="Transparent"
+                                        BorderThickness="0" Cursor="Hand"
+                                        Command="{Binding ClearSearchCommand}"
+                                        Visibility="{Binding HasSearchText, Converter={StaticResource BoolToVis}}"/>
+
+                                <!-- Popup de resultados -->
+                                <Popup PlacementTarget="{Binding ElementName=txtBuscar}"
+                                       Placement="Bottom"
+                                       StaysOpen="False"
+                                       AllowsTransparency="True"
+                                       PopupAnimation="Fade"
+                                       IsOpen="{Binding IsDropdownOpen, Mode=TwoWay}"
+                                       MinWidth="{Binding ActualWidth, ElementName=txtBuscar}">
+                                    <Border Background="White"
+                                            BorderBrush="#D1D5DB" BorderThickness="1"
+                                            CornerRadius="6" MaxHeight="220">
+                                        <Border.Effect>
+                                            <DropShadowEffect BlurRadius="16" ShadowDepth="4"
+                                                              Color="#000000" Opacity="0.10"/>
+                                        </Border.Effect>
+                                        <ListBox ItemsSource="{Binding ResultadosBusqueda}"
+                                                 SelectedItem="{Binding ProductoSeleccionado, Mode=TwoWay}"
+                                                 BorderThickness="0" Background="Transparent"
+                                                 FontSize="13"
+                                                 ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                                            <ListBox.ItemContainerStyle>
+                                                <Style TargetType="ListBoxItem">
+                                                    <Setter Property="Padding" Value="12,9"/>
+                                                    <Setter Property="Cursor" Value="Hand"/>
+                                                    <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                                                    <Style.Triggers>
+                                                        <Trigger Property="IsMouseOver" Value="True">
+                                                            <Setter Property="Background" Value="#F0F9FF"/>
+                                                        </Trigger>
+                                                        <Trigger Property="IsSelected" Value="True">
+                                                            <Setter Property="Background" Value="#DBEAFE"/>
+                                                            <Setter Property="Foreground" Value="#1D4ED8"/>
+                                                        </Trigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </ListBox.ItemContainerStyle>
+                                            <ListBox.ItemTemplate>
+                                                <DataTemplate>
+                                                    <Grid>
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition Width="110"/>
+                                                            <ColumnDefinition Width="*"/>
+                                                            <ColumnDefinition Width="Auto"/>
+                                                        </Grid.ColumnDefinitions>
+                                                        <TextBlock Grid.Column="0" Text="{Binding CodigoBarra}"
+                                                                   Foreground="#9CA3AF" FontSize="12"
+                                                                   VerticalAlignment="Center"/>
+                                                        <TextBlock Grid.Column="1" Text="{Binding NombreEtiqueta}"
+                                                                   Foreground="#111827" FontWeight="SemiBold"
+                                                                   VerticalAlignment="Center"/>
+                                                        <TextBlock Grid.Column="2" Text="{Binding PrecioFormateado}"
+                                                                   Foreground="#6B7280" FontSize="12"
+                                                                   VerticalAlignment="Center" Margin="12,0,0,0"/>
+                                                    </Grid>
+                                                </DataTemplate>
+                                            </ListBox.ItemTemplate>
+                                        </ListBox>
+                                    </Border>
+                                </Popup>
+                            </Grid>
+
+                            <!-- Botón + Agregar -->
+                            <Button Grid.Column="1"
+                                    Content="+ Agregar"
+                                    Margin="8,0,0,0" Height="36" Padding="20,0"
                                     Style="{StaticResource ActionButton}" Background="#1A7F37"
-                                    Command="{Binding AgregarProductoCommand}"/>
+                                    Command="{Binding AgregarProductoCommand}"
+                                    IsEnabled="{Binding HasSelectedProduct}"/>
                         </Grid>
+
+                        <!-- Chip del producto seleccionado -->
+                        <Border Margin="0,8,0,0"
+                                Background="#F0FDF4" BorderBrush="#BBF7D0" BorderThickness="1"
+                                CornerRadius="6" Padding="12,9"
+                                Visibility="{Binding HasSelectedProduct, Converter={StaticResource BoolToVis}}">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <Ellipse Grid.Column="0" Width="8" Height="8" Fill="#16A34A"
+                                         VerticalAlignment="Center" Margin="0,0,10,0"/>
+                                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                                    <TextBlock Text="{Binding ProductoSeleccionado.NombreEtiqueta}"
+                                               FontSize="13" FontWeight="SemiBold" Foreground="#15803D"/>
+                                    <TextBlock Text=" · " Foreground="#6B7280" FontSize="13"/>
+                                    <TextBlock Text="{Binding ProductoSeleccionado.CodigoBarra}"
+                                               FontSize="12" Foreground="#6B7280" VerticalAlignment="Center"/>
+                                    <TextBlock Text=" · " Foreground="#6B7280" FontSize="13"/>
+                                    <TextBlock Text="{Binding ProductoSeleccionado.PrecioFormateado}"
+                                               FontSize="13" Foreground="#374151"/>
+                                </StackPanel>
+                                <Button Grid.Column="2"
+                                        Content="Cambiar"
+                                        FontSize="12" Foreground="#3B82F6"
+                                        Background="Transparent" BorderThickness="0"
+                                        Cursor="Hand"
+                                        Command="{Binding ClearSelectionCommand}"/>
+                            </Grid>
+                        </Border>
 
                         <!-- Detalle -->
                         <TextBlock Text="DETALLE DE LA ORDEN" Style="{StaticResource FieldLabel}" Margin="0,20,0,8"/>

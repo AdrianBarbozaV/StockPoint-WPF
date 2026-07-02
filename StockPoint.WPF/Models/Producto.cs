@@ -90,6 +90,8 @@ namespace StockPoint.WPF.Models
             set { _puedeComprarse = value; OnPropertyChanged(); }
         }
 
+        public string PrecioFormateado => $"₡{PrecioNeto:N0}";
+
         // "ok" | "alerta" | "critico" — usado por el semáforo del DataGrid
         public string EstadoStock
         {

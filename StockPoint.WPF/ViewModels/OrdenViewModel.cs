@@ -21,14 +21,23 @@ namespace StockPoint.WPF.ViewModels
         private Cliente? clienteSeleccionado;
 
         [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(HasSearchText))]
         private string busquedaProducto = string.Empty;
+
+        public bool HasSearchText => !string.IsNullOrEmpty(BusquedaProducto);
+
+        [ObservableProperty]
+        private bool isDropdownOpen;
 
         [ObservableProperty]
         private ObservableCollection<Producto> resultadosBusqueda = new();
 
         [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(HasSelectedProduct))]
         [NotifyCanExecuteChangedFor(nameof(AgregarProductoCommand))]
         private Producto? productoSeleccionado;
+
+        public bool HasSelectedProduct => ProductoSeleccionado != null;
 
         [ObservableProperty]
         private ObservableCollection<OrdenDetalle> detalles = new();
@@ -68,21 +77,48 @@ namespace StockPoint.WPF.ViewModels
             }
         }
 
-        [RelayCommand]
-        private async Task BuscarProducto()
+        partial void OnBusquedaProductoChanged(string value)
         {
-            if (string.IsNullOrWhiteSpace(BusquedaProducto)) return;
+            if (value.Length >= 2)
+                _ = BuscarProductoAutoAsync(value);
+            else
+            {
+                ResultadosBusqueda.Clear();
+                IsDropdownOpen = false;
+            }
+        }
+
+        partial void OnProductoSeleccionadoChanged(Producto? value)
+        {
+            if (value != null) IsDropdownOpen = false;
+        }
+
+        private async Task BuscarProductoAutoAsync(string termino)
+        {
             try
             {
-                var resultados = await ordenService.BuscarProductosAsync(BusquedaProducto);
+                var resultados = await ordenService.BuscarProductosAsync(termino);
                 ResultadosBusqueda.Clear();
                 foreach (var p in resultados) ResultadosBusqueda.Add(p);
+                IsDropdownOpen = ResultadosBusqueda.Count > 0;
             }
-            catch (System.Exception ex)
-            {
-                MessageBox.Show($"Error al buscar productos: {ex.Message}",
-                    "Error", MessageBoxButton.OK, MessageBoxImage.Warning);
-            }
+            catch { /* errores de red se ignoran silenciosamente en búsqueda live */ }
+        }
+
+        [RelayCommand]
+        private void ClearSearch()
+        {
+            BusquedaProducto = string.Empty;
+            ProductoSeleccionado = null;
+            ResultadosBusqueda.Clear();
+            IsDropdownOpen = false;
+        }
+
+        [RelayCommand]
+        private void ClearSelection()
+        {
+            ProductoSeleccionado = null;
+            IsDropdownOpen = ResultadosBusqueda.Count > 0;
         }
 
         private bool CanAgregarProducto() => ProductoSeleccionado != null;
@@ -99,13 +135,13 @@ namespace StockPoint.WPF.ViewModels
             {
                 Detalles.Add(new OrdenDetalle
                 {
-                    ProductoId             = ProductoSeleccionado!.ProductId,
-                    Codigo                 = ProductoSeleccionado.CodigoBarra,
-                    NombreProducto         = ProductoSeleccionado.NombreEtiqueta,
-                    PrecioUnitario         = ProductoSeleccionado.PrecioNeto,
-                    TieneImpuesto          = ProductoSeleccionado.TieneImpuesto,
-                    ImpuestoValorAgregado  = ProductoSeleccionado.ImpuestoValorAgregado,
-                    Cantidad               = 1
+                    ProductoId            = ProductoSeleccionado!.ProductId,
+                    Codigo                = ProductoSeleccionado.CodigoBarra,
+                    NombreProducto        = ProductoSeleccionado.NombreEtiqueta,
+                    PrecioUnitario        = ProductoSeleccionado.PrecioNeto,
+                    TieneImpuesto         = ProductoSeleccionado.TieneImpuesto,
+                    ImpuestoValorAgregado = ProductoSeleccionado.ImpuestoValorAgregado,
+                    Cantidad              = 1
                 });
             }
             RecalcularTotales();
