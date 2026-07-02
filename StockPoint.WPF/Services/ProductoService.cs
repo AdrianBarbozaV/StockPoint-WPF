@@ -1,46 +1,113 @@
+using System.Net.Http;
+using System.Net.Http.Json;
+using System.Text.Json;
 using StockPoint.WPF.Models;
 
 namespace StockPoint.WPF.Services
 {
-    // Implementación mock — reemplazar por HttpClient cuando la API esté lista
     public class ProductoService : IProductoService
     {
-        private readonly List<Producto> _store =
-        [
-            new() { ProductId = 1, CodigoBarra = "P001", NombreEtiqueta = "Laptop Lenovo",    Descripcion = "Laptop i5 16GB",   PrecioNeto = 450000, TieneImpuesto = true,  ImpuestoValorAgregado = 13, ExistenciaEnStock = 10, ExistenciaLimiteParaAlerta = 3,  PuedeVenderse = true, PuedeComprarse = true },
-            new() { ProductId = 2, CodigoBarra = "P002", NombreEtiqueta = "Mouse Logitech",   Descripcion = "Mouse inalámbrico", PrecioNeto = 12000,  TieneImpuesto = true,  ImpuestoValorAgregado = 13, ExistenciaEnStock = 50, ExistenciaLimiteParaAlerta = 10, PuedeVenderse = true, PuedeComprarse = true },
-            new() { ProductId = 3, CodigoBarra = "P003", NombreEtiqueta = "Cable HDMI 2m",    Descripcion = "Cable HDMI 4K",    PrecioNeto = 4500,   TieneImpuesto = false, ImpuestoValorAgregado = 0,  ExistenciaEnStock = 2,  ExistenciaLimiteParaAlerta = 5,  PuedeVenderse = true, PuedeComprarse = true },
-            new() { ProductId = 4, CodigoBarra = "P004", NombreEtiqueta = "Teclado mecánico", Descripcion = "Teclado RGB",      PrecioNeto = 35000,  TieneImpuesto = true,  ImpuestoValorAgregado = 13, ExistenciaEnStock = 0,  ExistenciaLimiteParaAlerta = 5,  PuedeVenderse = true, PuedeComprarse = false },
-        ];
+        private static readonly HttpClient _client = new();
+        private static bool _initialized = false;
+        private static readonly object _lock = new();
 
-        private int _nextId = 5;
-
-        public Task<List<Producto>> GetAllAsync() =>
-            Task.FromResult(_store.ToList());
-
-        public Task<Producto?> GetByIdAsync(int id) =>
-            Task.FromResult(_store.FirstOrDefault(p => p.ProductId == id));
-
-        public Task<Producto> CreateAsync(Producto producto)
+        public ProductoService()
         {
-            producto.ProductId = _nextId++;
-            _store.Add(producto);
-            return Task.FromResult(producto);
+            lock (_lock)
+            {
+                if (!_initialized)
+                {
+                    _client.BaseAddress = new Uri(AppConfig.GetApiBaseUrl());
+                    _initialized = true;
+                }
+            }
         }
 
-        public Task<Producto> UpdateAsync(Producto producto)
+        public async Task<List<Producto>> GetAllAsync()
         {
-            var index = _store.FindIndex(p => p.ProductId == producto.ProductId);
-            if (index >= 0) _store[index] = producto;
-            return Task.FromResult(producto);
+            var result = await _client.GetFromJsonAsync<List<Producto>>("api/productos");
+            return result ?? [];
         }
 
-        public Task<bool> DeleteAsync(int id)
+        public async Task<Producto?> GetByIdAsync(int id)
         {
-            var item = _store.FirstOrDefault(p => p.ProductId == id);
-            if (item is null) return Task.FromResult(false);
-            _store.Remove(item);
-            return Task.FromResult(true);
+            try
+            {
+                return await _client.GetFromJsonAsync<Producto>($"api/productos/{id}");
+            }
+            catch (HttpRequestException ex) when (ex.StatusCode == System.Net.HttpStatusCode.NotFound)
+            {
+                return null;
+            }
         }
+
+        public async Task<List<Producto>> BuscarAsync(string termino)
+        {
+            var encoded = Uri.EscapeDataString(termino);
+            var result  = await _client.GetFromJsonAsync<List<Producto>>($"api/productos/buscar?termino={encoded}");
+            return result ?? [];
+        }
+
+        public async Task<Producto> CreateAsync(Producto producto)
+        {
+            // La API espera ProductoRequest con IdsCategoria en lugar de objetos Categoria completos.
+            var request = BuildRequest(producto);
+            var response = await _client.PostAsJsonAsync("api/productos", request);
+            response.EnsureSuccessStatusCode();
+
+            var created = await response.Content.ReadFromJsonAsync<Producto>();
+            return created!;
+        }
+
+        public async Task<Producto> UpdateAsync(Producto producto)
+        {
+            var request  = BuildRequest(producto);
+            var response = await _client.PutAsJsonAsync($"api/productos/{producto.ProductId}", request);
+            response.EnsureSuccessStatusCode();
+
+            // PUT devuelve 204 sin body; hacemos un GET para devolver el objeto actualizado.
+            return (await GetByIdAsync(producto.ProductId))!;
+        }
+
+        public async Task<bool> DeleteAsync(int id)
+        {
+            var response = await _client.DeleteAsync($"api/productos/{id}");
+
+            if (response.IsSuccessStatusCode) return true;
+
+            // 400 = el producto tiene órdenes asociadas; relanzamos con el mensaje del API.
+            if (response.StatusCode == System.Net.HttpStatusCode.BadRequest)
+            {
+                using var doc = await JsonDocument.ParseAsync(
+                    await response.Content.ReadAsStreamAsync());
+                var msg = doc.RootElement.TryGetProperty("mensaje", out var m)
+                    ? m.GetString() ?? "No se puede eliminar el producto."
+                    : "No se puede eliminar el producto.";
+                throw new InvalidOperationException(msg);
+            }
+
+            response.EnsureSuccessStatusCode(); // 404 u otro error inesperado
+            return false;
+        }
+
+        // Construye el DTO que espera la API (ProductoRequest con IdsCategoria).
+        private static object BuildRequest(Producto p) => new
+        {
+            nombreEtiqueta             = p.NombreEtiqueta,
+            descripcion                = p.Descripcion,
+            existenciaEnStock          = p.ExistenciaEnStock,
+            existenciaLimiteParaAlerta = p.ExistenciaLimiteParaAlerta,
+            precioNeto                 = p.PrecioNeto,
+            precioMinimo               = p.PrecioMinimo,
+            precioMinimoConImpuesto    = p.PrecioMinimo,   // el WPF no tiene este campo, usar precioMinimo como fallback
+            tieneImpuesto              = p.TieneImpuesto,
+            impuestoValorAgregado      = p.ImpuestoValorAgregado,
+            impuestoLocal1             = 0m,
+            impuestoLocal2             = 0m,
+            puedeVenderse              = p.PuedeVenderse,
+            puedeComprarse             = p.PuedeComprarse,
+            codigoBarra                = p.CodigoBarra,
+            idsCategoria               = Array.Empty<int>()  // gestión de categorías no incluida en la UI WPF
+        };
     }
 }

@@ -11,7 +11,7 @@ namespace StockPoint.WPF.ViewModels
 {
     public partial class OrdenViewModel : ObservableObject
     {
-        private readonly MockOrdenService ordenService;
+        private readonly OrdenService ordenService;
 
         [ObservableProperty]
         private ObservableCollection<Cliente> clientes = new();
@@ -49,24 +49,40 @@ namespace StockPoint.WPF.ViewModels
 
         public OrdenViewModel()
         {
-            ordenService = new MockOrdenService();
+            ordenService = new OrdenService();
             _ = CargarClientesAsync();
         }
 
         private async Task CargarClientesAsync()
         {
-            var lista = await ordenService.GetClientesAsync();
-            Clientes.Clear();
-            foreach (var c in lista) Clientes.Add(c);
+            try
+            {
+                var lista = await ordenService.GetClientesAsync();
+                Clientes.Clear();
+                foreach (var c in lista) Clientes.Add(c);
+            }
+            catch (System.Exception ex)
+            {
+                MessageBox.Show($"No se pudo cargar la lista de clientes: {ex.Message}",
+                    "Error de conexión", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
         }
 
         [RelayCommand]
         private async Task BuscarProducto()
         {
             if (string.IsNullOrWhiteSpace(BusquedaProducto)) return;
-            var resultados = await ordenService.BuscarProductosAsync(BusquedaProducto);
-            ResultadosBusqueda.Clear();
-            foreach (var p in resultados) ResultadosBusqueda.Add(p);
+            try
+            {
+                var resultados = await ordenService.BuscarProductosAsync(BusquedaProducto);
+                ResultadosBusqueda.Clear();
+                foreach (var p in resultados) ResultadosBusqueda.Add(p);
+            }
+            catch (System.Exception ex)
+            {
+                MessageBox.Show($"Error al buscar productos: {ex.Message}",
+                    "Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
         }
 
         private bool CanAgregarProducto() => ProductoSeleccionado != null;
@@ -75,17 +91,21 @@ namespace StockPoint.WPF.ViewModels
         private void AgregarProducto()
         {
             var existente = Detalles.FirstOrDefault(d => d.ProductoId == ProductoSeleccionado!.ProductId);
-            if (existente != null) { existente.Cantidad++; }
+            if (existente != null)
+            {
+                existente.Cantidad++;
+            }
             else
             {
                 Detalles.Add(new OrdenDetalle
                 {
-                    ProductoId = ProductoSeleccionado!.ProductId,
-                    Codigo = ProductoSeleccionado.CodigoBarra,
-                    NombreProducto = ProductoSeleccionado.NombreEtiqueta,
-                    PrecioUnitario = ProductoSeleccionado.PrecioNeto,
-                    TieneImpuesto = ProductoSeleccionado.TieneImpuesto,
-                    Cantidad = 1
+                    ProductoId             = ProductoSeleccionado!.ProductId,
+                    Codigo                 = ProductoSeleccionado.CodigoBarra,
+                    NombreProducto         = ProductoSeleccionado.NombreEtiqueta,
+                    PrecioUnitario         = ProductoSeleccionado.PrecioNeto,
+                    TieneImpuesto          = ProductoSeleccionado.TieneImpuesto,
+                    ImpuestoValorAgregado  = ProductoSeleccionado.ImpuestoValorAgregado,
+                    Cantidad               = 1
                 });
             }
             RecalcularTotales();
@@ -121,8 +141,8 @@ namespace StockPoint.WPF.ViewModels
             var orden = new Orden
             {
                 ClienteId = ClienteSeleccionado!.ClienteId,
-                Fecha = FechaOrden,
-                Detalles = Detalles.ToList()
+                Fecha     = FechaOrden,
+                Detalles  = Detalles.ToList()
             };
 
             try
@@ -135,18 +155,16 @@ namespace StockPoint.WPF.ViewModels
             }
             catch (System.Exception ex)
             {
-                MessageBox.Show($"Error al procesar la orden: {ex.Message}", "Error",
+                MessageBox.Show(ex.Message, "Error al procesar la orden",
                     MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
-        // ponytail: IVA 13% fijo, confirmar con Joel cuando defina el campo en la API
         private void RecalcularTotales()
         {
-            const decimal tasaIva = 0.13m;
             SubtotalSinImpuesto = Detalles.Sum(d => d.Subtotal);
-            TotalImpuesto = Detalles.Where(d => d.TieneImpuesto).Sum(d => d.Subtotal * tasaIva);
-            TotalVenta = SubtotalSinImpuesto + TotalImpuesto;
+            TotalImpuesto       = Detalles.Sum(d => d.ImpuestoLinea);
+            TotalVenta          = SubtotalSinImpuesto + TotalImpuesto;
         }
     }
 }

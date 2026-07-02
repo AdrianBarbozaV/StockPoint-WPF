@@ -27,7 +27,7 @@ namespace StockPoint.WPF.Models
         public string CodigoBarra
         {
             get => _codigoBarra;
-            set { _codigoBarra = value; OnPropertyChanged(); }
+            set { _codigoBarra = value ?? string.Empty; OnPropertyChanged(); }
         }
 
         public string NombreEtiqueta

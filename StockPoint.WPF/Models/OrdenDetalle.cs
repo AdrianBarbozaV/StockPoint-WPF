@@ -5,12 +5,13 @@ namespace StockPoint.WPF.Models
 {
     public class OrdenDetalle : INotifyPropertyChanged
     {
-        private int productoId;
-        private string codigo = string.Empty;
-        private string nombreProducto = string.Empty;
+        private int     productoId;
+        private string  codigo                = string.Empty;
+        private string  nombreProducto        = string.Empty;
         private decimal precioUnitario;
-        private bool tieneImpuesto;
-        private int cantidad;
+        private bool    tieneImpuesto;
+        private decimal impuestoValorAgregado;
+        private int     cantidad;
 
         public event PropertyChangedEventHandler? PropertyChanged;
 
@@ -35,13 +36,20 @@ namespace StockPoint.WPF.Models
         public decimal PrecioUnitario
         {
             get => precioUnitario;
-            set { if (precioUnitario != value) { precioUnitario = value; OnPropertyChanged(); } }
+            set { if (precioUnitario != value) { precioUnitario = value; OnPropertyChanged(); NotifyCalculados(); } }
         }
 
         public bool TieneImpuesto
         {
             get => tieneImpuesto;
-            set { if (tieneImpuesto != value) { tieneImpuesto = value; OnPropertyChanged(); } }
+            set { if (tieneImpuesto != value) { tieneImpuesto = value; OnPropertyChanged(); NotifyCalculados(); } }
+        }
+
+        // Tasa real del producto (puede venir como fracción 0.13 o porcentaje 13).
+        public decimal ImpuestoValorAgregado
+        {
+            get => impuestoValorAgregado;
+            set { if (impuestoValorAgregado != value) { impuestoValorAgregado = value; OnPropertyChanged(); NotifyCalculados(); } }
         }
 
         public int Cantidad
@@ -53,14 +61,29 @@ namespace StockPoint.WPF.Models
                 {
                     cantidad = value;
                     OnPropertyChanged();
-                    OnPropertyChanged(nameof(Subtotal));
-                    OnPropertyChanged(nameof(ImpuestoLinea));
+                    NotifyCalculados();
                 }
             }
         }
 
         public decimal Subtotal => PrecioUnitario * Cantidad;
-        public decimal ImpuestoLinea => TieneImpuesto ? Subtotal * 0.13m : 0m;
+
+        public decimal ImpuestoLinea
+        {
+            get
+            {
+                if (!TieneImpuesto) return 0m;
+                // Normaliza: si la tasa es > 1 es un porcentaje (ej. 13), si <= 1 ya es fracción (ej. 0.13)
+                var tasa = ImpuestoValorAgregado > 1m ? ImpuestoValorAgregado / 100m : ImpuestoValorAgregado;
+                return Math.Round(Subtotal * tasa, 2, MidpointRounding.AwayFromZero);
+            }
+        }
+
+        private void NotifyCalculados()
+        {
+            OnPropertyChanged(nameof(Subtotal));
+            OnPropertyChanged(nameof(ImpuestoLinea));
+        }
 
         protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)
             => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));

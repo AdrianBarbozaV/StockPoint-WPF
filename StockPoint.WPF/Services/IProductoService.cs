@@ -6,6 +6,7 @@ namespace StockPoint.WPF.Services
     {
         Task<List<Producto>> GetAllAsync();
         Task<Producto?> GetByIdAsync(int id);
+        Task<List<Producto>> BuscarAsync(string termino);
         Task<Producto> CreateAsync(Producto producto);
         Task<Producto> UpdateAsync(Producto producto);
         Task<bool> DeleteAsync(int id);

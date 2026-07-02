@@ -172,8 +172,7 @@
                                   BorderBrush="#D1D5DB" BorderThickness="1"
                                   Padding="8,6" FontSize="13"
                                   ItemsSource="{Binding Clientes}"
-                                  SelectedItem="{Binding ClienteSeleccionado, Mode=TwoWay}"
-                                  DisplayMemberPath="Nombre"/>
+                                  SelectedItem="{Binding ClienteSeleccionado, Mode=TwoWay}"/>
 
                         <!-- Fecha -->
                         <TextBlock Text="FECHA DE ORDEN" Style="{StaticResource FieldLabel}"/>

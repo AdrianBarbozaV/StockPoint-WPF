@@ -155,9 +155,17 @@ namespace StockPoint.WPF.ViewModels
 
             if (confirm != MessageBoxResult.Yes) return;
 
-            await _service.DeleteAsync(SelectedProducto.ProductId);
-            Productos.Remove(SelectedProducto);
-            IsFormVisible = false;
+            try
+            {
+                await _service.DeleteAsync(SelectedProducto.ProductId);
+                Productos.Remove(SelectedProducto);
+                IsFormVisible = false;
+            }
+            catch (InvalidOperationException ex)
+            {
+                MessageBox.Show(ex.Message, "No se puede eliminar",
+                    MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
         }
 
         [RelayCommand]
