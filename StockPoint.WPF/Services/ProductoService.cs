@@ -90,6 +90,13 @@ namespace StockPoint.WPF.Services
             return false;
         }
 
+        // GET /api/productos/{id}/ordenes → órdenes en las que se vendió el producto.
+        public async Task<List<OrdenPorProducto>> GetOrdenesPorProductoAsync(int id)
+        {
+            var result = await _client.GetFromJsonAsync<List<OrdenPorProducto>>($"api/productos/{id}/ordenes");
+            return result ?? [];
+        }
+
         // Construye el DTO que espera la API (ProductoRequest con IdsCategoria).
         private static object BuildRequest(Producto p) => new
         {

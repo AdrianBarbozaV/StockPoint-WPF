@@ -488,6 +488,66 @@
                                       IsEnabled="{Binding IsViewMode, Converter={StaticResource InverseBool}}"
                                       ToolTip="Indica si el producto puede reingresarse mediante compras a proveedores (reposición de inventario). Este proyecto no incluye un módulo de compras; el campo se conserva por trazabilidad con el modelo de dominio."
                                       Foreground="#374151" FontSize="13" Margin="0,0,0,4"/>
+
+                            <!-- Órdenes asociadas: solo en modo "Ver producto" -->
+                            <StackPanel Visibility="{Binding IsViewMode, Converter={StaticResource BoolToVis}}">
+                                <TextBlock Text="ÓRDENES ASOCIADAS" Foreground="#9CA3AF" FontSize="10" FontWeight="Bold" Margin="0,10,0,4"/>
+                                <Separator Background="#F3F4F6" Margin="0,0,0,8"/>
+
+                                <TextBlock Text="Cargando órdenes..." Foreground="#9CA3AF" FontSize="12"
+                                           Margin="0,2,0,6"
+                                           Visibility="{Binding CargandoOrdenes, Converter={StaticResource BoolToVis}}"/>
+
+                                <!-- Mensaje cuando el producto no tiene ventas -->
+                                <TextBlock Text="Este producto aún no se ha vendido en ninguna orden."
+                                           Foreground="#9CA3AF" FontSize="12" TextWrapping="Wrap" Margin="0,2,0,6">
+                                    <TextBlock.Style>
+                                        <Style TargetType="TextBlock">
+                                            <Setter Property="Visibility" Value="Collapsed"/>
+                                            <Style.Triggers>
+                                                <MultiDataTrigger>
+                                                    <MultiDataTrigger.Conditions>
+                                                        <Condition Binding="{Binding CargandoOrdenes}" Value="False"/>
+                                                        <Condition Binding="{Binding OrdenesAsociadas.Count}" Value="0"/>
+                                                    </MultiDataTrigger.Conditions>
+                                                    <Setter Property="Visibility" Value="Visible"/>
+                                                </MultiDataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </TextBlock.Style>
+                                </TextBlock>
+
+                                <ItemsControl ItemsSource="{Binding OrdenesAsociadas}">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <Border Background="#F9FAFB" BorderBrush="#E5E7EB" BorderThickness="1"
+                                                    CornerRadius="4" Padding="10,7" Margin="0,0,0,6">
+                                                <Grid>
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="*"/>
+                                                        <ColumnDefinition Width="Auto"/>
+                                                    </Grid.ColumnDefinitions>
+                                                    <StackPanel>
+                                                        <StackPanel Orientation="Horizontal">
+                                                            <TextBlock Text="Orden #" Foreground="#6B7280" FontSize="12"/>
+                                                            <TextBlock Text="{Binding NumeroOrden}" Foreground="#2563EB"
+                                                                       FontSize="13" FontWeight="Bold"/>
+                                                        </StackPanel>
+                                                        <TextBlock Text="{Binding FechaOrden, StringFormat='dd/MM/yyyy'}"
+                                                                   Foreground="#9CA3AF" FontSize="11" Margin="0,1,0,0"/>
+                                                        <TextBlock Foreground="#6B7280" FontSize="11" Margin="0,1,0,0">
+                                                            <Run Text="Cant: "/><Run Text="{Binding Cantidad}"/>
+                                                        </TextBlock>
+                                                    </StackPanel>
+                                                    <TextBlock Grid.Column="1" VerticalAlignment="Center"
+                                                               Foreground="#111827" FontSize="13" FontWeight="SemiBold"
+                                                               Text="{Binding Subtotal, StringFormat='₡{0:N2}'}"/>
+                                                </Grid>
+                                            </Border>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </StackPanel>
                         </StackPanel>
                     </ScrollViewer>
 

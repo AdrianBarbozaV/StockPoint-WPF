@@ -201,6 +201,8 @@ namespace StockPoint.WPF.ViewModels
             SubtotalSinImpuesto = Detalles.Sum(d => d.Subtotal);
             TotalImpuesto       = Detalles.Sum(d => d.ImpuestoLinea);
             TotalVenta          = SubtotalSinImpuesto + TotalImpuesto;
+            // Detalles cambió (agregar/quitar/procesar) → reevaluar si se puede procesar la orden.
+            ProcesarOrdenCommand.NotifyCanExecuteChanged();
         }
     }
 }

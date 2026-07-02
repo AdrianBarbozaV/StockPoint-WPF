@@ -10,5 +10,6 @@ namespace StockPoint.WPF.Services
         Task<Producto> CreateAsync(Producto producto);
         Task<Producto> UpdateAsync(Producto producto);
         Task<bool> DeleteAsync(int id);
+        Task<List<OrdenPorProducto>> GetOrdenesPorProductoAsync(int id);
     }
 }

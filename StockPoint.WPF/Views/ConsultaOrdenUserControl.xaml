@@ -87,7 +87,11 @@
                     <StackPanel Width="220" Margin="0,0,10,0">
                         <TextBlock Text="NÚMERO DE ORDEN" Foreground="#6B7280" FontSize="10" FontWeight="Bold" Margin="0,0,0,5"/>
                         <TextBox Style="{StaticResource LightInput}"
-                                 Text="{Binding NumeroBusqueda, UpdateSourceTrigger=PropertyChanged}"/>
+                                 Text="{Binding NumeroBusqueda, UpdateSourceTrigger=PropertyChanged}">
+                            <TextBox.InputBindings>
+                                <KeyBinding Key="Enter" Command="{Binding BuscarCommand}"/>
+                            </TextBox.InputBindings>
+                        </TextBox>
                     </StackPanel>
                     <Button Content="Buscar" Style="{StaticResource ActionButton}" Background="#2563EB"
                             VerticalAlignment="Bottom" Command="{Binding BuscarCommand}"/>

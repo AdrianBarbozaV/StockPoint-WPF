@@ -41,6 +41,13 @@ namespace StockPoint.WPF.ViewModels
         [ObservableProperty]
         private string _searchText = string.Empty;
 
+        // Órdenes en las que se vendió el producto que se está visualizando.
+        [ObservableProperty]
+        private ObservableCollection<OrdenPorProducto> _ordenesAsociadas = [];
+
+        [ObservableProperty]
+        private bool _cargandoOrdenes;
+
         private bool _isNew;
 
         // ── Estadísticas ──────────────────────────────────────────────────
@@ -113,12 +120,30 @@ namespace StockPoint.WPF.ViewModels
         }
 
         [RelayCommand(CanExecute = nameof(HasSelection))]
-        private void View()
+        private async Task ViewAsync()
         {
+            var id = SelectedProducto!.ProductId;
             Form = CopiarDeSeleccionado();
             FormTitle = "Detalles del producto";
             IsViewMode = true;
             IsFormVisible = true;
+
+            OrdenesAsociadas = [];
+            CargandoOrdenes = true;
+            try
+            {
+                var ordenes = await _service.GetOrdenesPorProductoAsync(id);
+                OrdenesAsociadas = new ObservableCollection<OrdenPorProducto>(ordenes);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"No se pudieron cargar las órdenes del producto: {ex.Message}",
+                    "Error de conexión", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
+            finally
+            {
+                CargandoOrdenes = false;
+            }
         }
 
         private Producto CopiarDeSeleccionado() => new()
