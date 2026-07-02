@@ -427,8 +427,11 @@
                         <StackPanel Margin="16,10,16,4">
 
                             <TextBlock Text="CÓDIGO DE BARRA" Foreground="#9CA3AF" FontSize="10" FontWeight="Bold" Margin="0,0,0,3"/>
-                            <TextBox Text="{Binding Form.CodigoBarra, UpdateSourceTrigger=PropertyChanged}"
-                                     IsReadOnly="{Binding IsViewMode}" Style="{StaticResource FormField}"/>
+                            <!-- El código de barra se autogenera en el backend: siempre de solo lectura. -->
+                            <TextBox Text="{Binding Form.CodigoBarra}" IsReadOnly="True"
+                                     Foreground="#9CA3AF" Background="#F9FAFB"
+                                     Style="{StaticResource FormField}"
+                                     ToolTip="Se genera automáticamente al crear el producto."/>
 
                             <TextBlock Foreground="#9CA3AF" FontSize="10" FontWeight="Bold" Margin="0,4,0,3">
                                 <Run Text="NOMBRE"/><Run Text=" *" Foreground="#DC2626"/>

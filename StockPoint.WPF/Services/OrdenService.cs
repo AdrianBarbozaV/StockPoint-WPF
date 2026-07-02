@@ -37,6 +37,18 @@ namespace StockPoint.WPF.Services
             return result ?? [];
         }
 
+        // Endpoint real: GET /api/ordenes/{numero}. Devuelve null si la orden no existe (404).
+        public async Task<OrdenConsulta?> ObtenerOrdenAsync(int numero)
+        {
+            var response = await _client.GetAsync($"api/ordenes/{numero}");
+
+            if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
+                return null;
+
+            response.EnsureSuccessStatusCode();
+            return await response.Content.ReadFromJsonAsync<OrdenConsulta>();
+        }
+
         // El API espera CrearOrdenRequest: { fkCliente, fkEmpleado, detalles:[{fkProducto, cantidad, descuento}] }
         // El WPF no tiene selección de empleado → se usa empleado id=1 (primer empleado del seed).
         public async Task ProcesarOrdenAsync(Orden orden)

@@ -103,5 +103,9 @@
             <views:ProductoUserControl/>
         </TabItem>
 
+        <TabItem Header="Consultar Orden">
+            <views:ConsultaOrdenUserControl/>
+        </TabItem>
+
     </TabControl>
 </Window>
